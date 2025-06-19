@@ -8,6 +8,8 @@
 // https://on.cypress.io/custom-commands
 // ***********************************************
 
+import LoginPage from "./pageObjects/LoginPage";
+
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
@@ -16,16 +18,21 @@
 // ============================================
 
 /**
- * Custom login command
- * @param {string} email - User email
- * @param {string} password - User password
+ * Custom login command for CRMx application
+ * @param {string} email - User email (optional, uses env variable if not provided)
+ * @param {string} password - User password (optional, uses env variable if not provided)
  */
-Cypress.Commands.add("login", (email, password) => {
-  cy.visit("/login");
-  cy.get('[data-testid="email-input"]').type(email);
-  cy.get('[data-testid="password-input"]').type(password);
-  cy.get('[data-testid="login-button"]').click();
+Cypress.Commands.add("login", (email = null, password = null) => {
+  const userEmail = email || Cypress.env("userEmail");
+  const userPassword = password || Cypress.env("userPassword");
+
+  cy.visit("https://www.crmx.mx");
+  LoginPage.homePageTitle().should("have.text", "Welcome to CRMx111");
+  LoginPage.emailInput().type(userEmail);
+  LoginPage.passwordInput().type(userPassword);
+  LoginPage.loginButton().click();
   cy.url().should("include", "/dashboard");
+  cy.get(".flex h1").should("have.text", "Dashboard");
 });
 
 /**
