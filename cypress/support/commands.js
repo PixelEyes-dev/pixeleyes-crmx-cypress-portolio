@@ -26,10 +26,6 @@ Cypress.Commands.add("login", (email = null, password = null) => {
   const userEmail = email || Cypress.env("CYPRESS_USER_EMAIL");
   const userPassword = password || Cypress.env("CYPRESS_USER_PASSWORD");
 
-  // Debug log to check environment variables (will be automatically redacted in CI logs)
-  cy.log("Debug - Email:", userEmail ? "is set" : "is not set");
-  cy.log("Debug - Password:", userPassword ? "is set" : "is not set");
-
   cy.visit("/");
   LoginPage.homePageTitle().should("have.text", "Welcome to CRMx111");
   LoginPage.emailInput().type(userEmail);

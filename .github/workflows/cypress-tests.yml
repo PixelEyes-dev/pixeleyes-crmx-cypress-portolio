@@ -22,14 +22,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Debug Environment (Safe)
-        run: |
-          echo "Environment variables present:"
-          env | grep -i CYPRESS_ | cut -d= -f1
-        env:
-          CYPRESS_USER_EMAIL: ${{ secrets.CYPRESS_USER_EMAIL }}
-          CYPRESS_USER_PASSWORD: ${{ secrets.CYPRESS_USER_PASSWORD }}
-
       - name: Run Cypress tests
         uses: cypress-io/github-action@v6
         env:
@@ -39,7 +31,6 @@ jobs:
           browser: chrome
           spec: cypress/e2e/authentication/userLogin.cy.js
           record: false
-          env: true
 
       - name: Upload screenshots
         uses: actions/upload-artifact@v4
