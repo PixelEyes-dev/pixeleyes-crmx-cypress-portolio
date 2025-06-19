@@ -9,9 +9,6 @@ on:
 jobs:
   cypress-run:
     runs-on: ubuntu-latest
-    env:
-      CYPRESS_USER_EMAIL: ${{ secrets.CYPRESS_USER_EMAIL }}
-      CYPRESS_USER_PASSWORD: ${{ secrets.CYPRESS_USER_PASSWORD }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,8 +22,19 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Debug environment variables
+        run: |
+          echo "Email is set: ${{ secrets.CYPRESS_USER_EMAIL != '' }}"
+          echo "Password is set: ${{ secrets.CYPRESS_USER_PASSWORD != '' }}"
+        env:
+          CYPRESS_USER_EMAIL: ${{ secrets.CYPRESS_USER_EMAIL }}
+          CYPRESS_USER_PASSWORD: ${{ secrets.CYPRESS_USER_PASSWORD }}
+
       - name: Run Cypress tests
         uses: cypress-io/github-action@v6
+        env:
+          CYPRESS_USER_EMAIL: ${{ secrets.CYPRESS_USER_EMAIL }}
+          CYPRESS_USER_PASSWORD: ${{ secrets.CYPRESS_USER_PASSWORD }}
         with:
           browser: chrome
           spec: cypress/e2e/authentication/userLogin.cy.js
