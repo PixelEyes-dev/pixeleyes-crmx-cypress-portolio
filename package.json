@@ -1,0 +1,30 @@
+{
+  "name": "pixeleyes-crmx-cypress-portolio",
+  "version": "1.0.0",
+  "description": "CRMx cypress tests!!!",
+  "main": "index.js",
+  "scripts": {
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "cypress:run:headed": "cypress run --headed",
+    "cypress:run:chrome": "cypress run --browser chrome",
+    "cypress:run:firefox": "cypress run --browser firefox",
+    "cypress:run:edge": "cypress run --browser edge",
+    "test": "cypress run",
+    "test:open": "cypress open"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gp-pixeleyes/pixeleyes-crmx-cypress-portolio.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gp-pixeleyes/pixeleyes-crmx-cypress-portolio/issues"
+  },
+  "homepage": "https://github.com/gp-pixeleyes/pixeleyes-crmx-cypress-portolio#readme",
+  "devDependencies": {
+    "cypress": "^14.5.0"
+  }
+}
