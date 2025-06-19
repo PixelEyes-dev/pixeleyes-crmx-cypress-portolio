@@ -26,7 +26,7 @@ Cypress.Commands.add("login", (email = null, password = null) => {
   const userEmail = email || Cypress.env("userEmail");
   const userPassword = password || Cypress.env("userPassword");
 
-  cy.visit("https://www.crmx.mx");
+  cy.visit("/");
   LoginPage.homePageTitle().should("have.text", "Welcome to CRMx111");
   LoginPage.emailInput().type(userEmail);
   LoginPage.passwordInput().type(userPassword);
