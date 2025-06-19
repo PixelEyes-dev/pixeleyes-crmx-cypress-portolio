@@ -9,9 +9,6 @@ on:
 jobs:
   cypress-run:
     runs-on: ubuntu-latest
-    env:
-      CYPRESS_USER_EMAIL: ${{ secrets.CYPRESS_USER_EMAIL }}
-      CYPRESS_USER_PASSWORD: ${{ secrets.CYPRESS_USER_PASSWORD }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -27,6 +24,9 @@ jobs:
 
       - name: Run Cypress tests
         uses: cypress-io/github-action@v6
+        env:
+          CYPRESS_USER_EMAIL: ${{ secrets.CYPRESS_USER_EMAIL }}
+          CYPRESS_USER_PASSWORD: ${{ secrets.CYPRESS_USER_PASSWORD }}
         with:
           browser: chrome
           spec: cypress/e2e/authentication/userLogin.cy.js

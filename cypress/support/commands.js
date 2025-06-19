@@ -23,8 +23,8 @@ import LoginPage from "./pageObjects/LoginPage";
  * @param {string} password - User password (optional, uses env variable if not provided)
  */
 Cypress.Commands.add("login", (email = null, password = null) => {
-  const userEmail = email || Cypress.env("userEmail");
-  const userPassword = password || Cypress.env("userPassword");
+  const userEmail = email || Cypress.env("CYPRESS_USER_EMAIL");
+  const userPassword = password || Cypress.env("CYPRESS_USER_PASSWORD");
 
   cy.visit("/");
   LoginPage.homePageTitle().should("have.text", "Welcome to CRMx111");

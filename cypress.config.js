@@ -9,8 +9,8 @@ module.exports = defineConfig({
     },
     env: {
       prodUrl: "https://www.crmx.mx",
-      userEmail: process.env.CYPRESS_USER_EMAIL,
-      userPassword: process.env.CYPRESS_USER_PASSWORD,
+      CYPRESS_USER_EMAIL: process.env.CYPRESS_USER_EMAIL,
+      CYPRESS_USER_PASSWORD: process.env.CYPRESS_USER_PASSWORD,
     },
     viewportWidth: 1280,
     viewportHeight: 720,
