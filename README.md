@@ -191,6 +191,202 @@ This project is licensed under the ISC License.
 
 For questions or contributions, please reach out through GitHub issues or pull requests.
 
+## Screenshot and Video Recording in GitHub Actions
+
+This project includes enhanced screenshot and video recording capabilities for Cypress tests running in GitHub Actions. Here's how it works:
+
+### 🎥 Automatic Recording Features
+
+#### Screenshots
+
+- **Automatic on failure**: Screenshots are automatically captured when tests fail
+- **Step-by-step recording**: Each test step can be recorded with before/after screenshots
+- **Custom naming**: Screenshots include timestamps and descriptive names
+- **Full page capture**: Option to capture entire page or just viewport
+
+#### Videos
+
+- **Automatic recording**: All test runs are recorded as MP4 videos
+- **Compressed format**: Videos are compressed for faster upload/download
+- **Retention policy**: Videos are kept for 30 days in GitHub Actions artifacts
+
+### 📸 Available Commands
+
+#### Basic Screenshot Commands
+
+```javascript
+// Take a simple screenshot
+cy.takeScreenshot("my-screenshot");
+
+// Take screenshot at specific test step
+cy.screenshotAtStep("login-attempt");
+
+// Take screenshot of specific element
+cy.screenshotElement(".login-form", "form-screenshot");
+
+// Take full page screenshot
+cy.screenshotFullPage("complete-page");
+
+// Take viewport-only screenshot
+cy.screenshotViewport("visible-area");
+```
+
+#### Advanced Recording Commands
+
+```javascript
+// Record a complete test session
+cy.startRecording("login-test-session");
+// ... your test steps ...
+cy.endRecording("login-test-session");
+
+// Record individual steps with before/after screenshots
+cy.recordStep("enter-credentials", () => {
+  cy.get("#email").type("user@example.com");
+  cy.get("#password").type("password123");
+});
+
+// Take screenshots around any action
+cy.screenshotAroundAction(() => {
+  cy.click("#submit-button");
+}, "submit-form");
+```
+
+### 🔧 Configuration
+
+#### Cypress Configuration (`cypress.config.js`)
+
+```javascript
+module.exports = defineConfig({
+  e2e: {
+    // Enhanced recording settings
+    video: true,
+    videoCompression: 32,
+    screenshotOnRunFailure: true,
+    screenshotOnHeadlessFailure: true,
+    trashAssetsBeforeRuns: true,
+
+    // Better error reporting
+    retries: {
+      runMode: 1,
+      openMode: 0,
+    },
+
+    // Timeout settings
+    defaultCommandTimeout: 10000,
+    requestTimeout: 10000,
+    responseTimeout: 10000,
+  },
+});
+```
+
+#### GitHub Actions Workflow (`.github/workflows/cypress-tests.yml`)
+
+The workflow automatically:
+
+- Runs tests with video recording enabled
+- Uploads screenshots on test failure
+- Uploads videos for all test runs
+- Creates artifacts with run numbers for easy identification
+- Comments on PRs with test results and artifact information
+
+### 📦 Artifact Management
+
+#### Artifact Types
+
+1. **Screenshots** (`cypress-screenshots-{run-number}`)
+
+   - Uploaded only on test failure
+   - Contains PNG files with descriptive names
+   - Retained for 30 days
+
+2. **Videos** (`cypress-videos-{run-number}`)
+
+   - Uploaded for all test runs
+   - Contains MP4 files of test execution
+   - Retained for 30 days
+
+3. **Test Results** (`cypress-results-{run-number}`)
+   - Contains detailed test execution data
+   - Useful for debugging and analysis
+
+#### Accessing Artifacts
+
+1. Go to your GitHub repository
+2. Navigate to Actions tab
+3. Click on the specific workflow run
+4. Scroll down to "Artifacts" section
+5. Download the desired artifact type
+
+### 🚀 Best Practices
+
+#### Test Structure
+
+```javascript
+describe("Feature Test", () => {
+  beforeEach(() => {
+    cy.startRecording("feature-test-session");
+  });
+
+  it("should perform specific action", () => {
+    cy.recordStep("setup", () => {
+      // Setup code
+    });
+
+    cy.recordStep("main-action", () => {
+      // Main test action
+    });
+
+    cy.recordStep("verification", () => {
+      // Verification code
+    });
+  });
+
+  afterEach(() => {
+    cy.endRecording("feature-test-session");
+  });
+});
+```
+
+#### Screenshot Naming Convention
+
+- Use descriptive names: `login-success`, `form-validation-error`
+- Include test context: `user-login-test-before-credentials`
+- Add timestamps automatically: `login-2024-01-15T10-30-45-123Z`
+
+#### Video Optimization
+
+- Keep tests focused and concise
+- Avoid unnecessary waits or delays
+- Use `cy.wait()` sparingly
+- Consider test isolation to reduce video size
+
+### 🔍 Debugging with Recordings
+
+#### When Tests Fail
+
+1. Check the GitHub Actions run
+2. Download the screenshots artifact
+3. Look for screenshots with `-FAILURE` suffix
+4. Review the video recording for the complete test flow
+5. Use the test results artifact for detailed logs
+
+#### Common Issues
+
+- **Large video files**: Reduce test complexity or increase video compression
+- **Missing screenshots**: Ensure `screenshotOnRunFailure: true` is set
+- **Slow uploads**: Consider using `trashAssetsBeforeRuns: true`
+
+### 📊 Monitoring and Analytics
+
+The workflow provides:
+
+- Automatic PR comments with test results
+- Artifact retention management
+- Run number tracking for easy reference
+- Failure analysis with visual evidence
+
+This setup ensures you have comprehensive visual documentation of your test execution, making debugging and quality assurance much more effective.
+
 ---
 
 **Note**: This portfolio demonstrates comprehensive QA automation skills using Cypress for CRM application testing. The tests cover various scenarios including authentication, data management, reporting, and user interface validation.
