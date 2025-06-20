@@ -75,53 +75,38 @@ jobs:
             const fs = require('fs');
             const path = require('path');
 
-            // Check if screenshots exist
-            const screenshotsPath = 'cypress/screenshots';
-            let screenshotMessage = '';
-            if (fs.existsSync(screenshotsPath)) {
-              const screenshots = fs.readdirSync(screenshotsPath, { recursive: true });
-              if (screenshots.length > 0) {
-                screenshotMessage = '\n\n📸 **Screenshots captured:**\n';
-                screenshots.forEach(screenshot => {
-                  if (screenshot.endsWith('.png')) {
-                    screenshotMessage += `- \`${screenshot}\`\n`;
-                  }
-                });
-              }
-            }
-
-            // Check if videos exist
-            const videosPath = 'cypress/videos';
-            let videoMessage = '';
-            if (fs.existsSync(videosPath)) {
-              const videos = fs.readdirSync(videosPath);
-              if (videos.length > 0) {
-                videoMessage = '\n\n🎥 **Videos recorded:**\n';
-                videos.forEach(video => {
-                  if (video.endsWith('.mp4')) {
-                    videoMessage += `- \`${video}\`\n`;
-                  }
-                });
-              }
-            }
-
             // Determine test status from the Cypress step's outcome
             const testOutcome = '${{ steps.cypress.outcome }}';
             const testStatus = testOutcome === 'success' ? '✅ Passed' : '❌ Failed';
 
-            // Create a link to the workflow run's artifacts
-            const artifactUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-            const artifactLink = `📦 [**Download artifacts**](${artifactUrl})`;
+            let messageBody = `**Status:** ${testStatus}\n**Run Number:** #${context.runNumber}`;
 
-            const message = `## 🧪 Cypress Test Results
+            // Only add artifact details if the tests failed
+            if (testOutcome === 'failure') {
+              // Check for screenshots
+              const screenshotsPath = 'cypress/screenshots';
+              if (fs.existsSync(screenshotsPath)) {
+                const screenshots = fs.readdirSync(screenshotsPath, { recursive: true }).filter(file => file.endsWith('.png'));
+                if (screenshots.length > 0) {
+                  messageBody += '\n\n📸 **Screenshots captured:**\n- ' + screenshots.join('\n- ');
+                }
+              }
 
-            **Status:** ${testStatus}
-            **Run Number:** #${context.runNumber}
+              // Check for videos
+              const videosPath = 'cypress/videos';
+              if (fs.existsSync(videosPath)) {
+                const videos = fs.readdirSync(videosPath).filter(file => file.endsWith('.mp4'));
+                if (videos.length > 0) {
+                  messageBody += '\n\n🎥 **Videos recorded:**\n- ' + videos.join('\n- ');
+                }
+              }
 
-            ${screenshotMessage}
-            ${videoMessage}
+              // Add a link to the workflow run's artifacts
+              const artifactUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+              messageBody += `\n\n📦 [**Download artifacts**](${artifactUrl})`;
+            }
 
-            ${artifactLink}`;
+            const message = `## 🧪 Cypress Test Results\n\n${messageBody}`;
 
             github.rest.issues.createComment({
               issue_number: context.issue.number,
