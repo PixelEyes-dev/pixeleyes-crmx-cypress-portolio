@@ -32,7 +32,7 @@ Cypress.Commands.add("login", (email = null, password = null) => {
   LoginPage.passwordInput().type(userPassword);
   LoginPage.loginButton().click();
   cy.url().should("include", "/dashboard");
-  cy.get(".flex h1").should("have.text", "Dashboarddd");
+  cy.get(".flex h1").should("have.text", "Dashboard");
 });
 
 /**
