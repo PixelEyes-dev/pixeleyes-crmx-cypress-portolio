@@ -36,14 +36,80 @@ jobs:
         uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: cypress-screenshots
+          name: cypress-screenshots-${{ github.run_number }}
           path: cypress/screenshots
           if-no-files-found: ignore
+          retention-days: 30
 
       - name: Upload videos
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: cypress-videos
+          name: cypress-videos-${{ github.run_number }}
           path: cypress/videos
           if-no-files-found: ignore
+          retention-days: 30
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cypress-results-${{ github.run_number }}
+          path: cypress/results
+          if-no-files-found: ignore
+          retention-days: 30
+
+      - name: Comment test results on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            // Check if screenshots exist
+            const screenshotsPath = 'cypress/screenshots';
+            let screenshotMessage = '';
+            if (fs.existsSync(screenshotsPath)) {
+              const screenshots = fs.readdirSync(screenshotsPath, { recursive: true });
+              if (screenshots.length > 0) {
+                screenshotMessage = '\n\n📸 **Screenshots captured:**\n';
+                screenshots.forEach(screenshot => {
+                  if (screenshot.endsWith('.png')) {
+                    screenshotMessage += `- \`${screenshot}\`\n`;
+                  }
+                });
+              }
+            }
+
+            // Check if videos exist
+            const videosPath = 'cypress/videos';
+            let videoMessage = '';
+            if (fs.existsSync(videosPath)) {
+              const videos = fs.readdirSync(videosPath);
+              if (videos.length > 0) {
+                videoMessage = '\n\n🎥 **Videos recorded:**\n';
+                videos.forEach(video => {
+                  if (video.endsWith('.mp4')) {
+                    videoMessage += `- \`${video}\`\n`;
+                  }
+                });
+              }
+            }
+
+            const message = `## 🧪 Cypress Test Results
+
+            **Status:** ${process.env.CYPRESS_RESULT === '0' ? '✅ Passed' : '❌ Failed'}
+            **Run Number:** #${context.runNumber}
+
+            ${screenshotMessage}
+            ${videoMessage}
+
+            📦 **Artifacts available for download above**`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: message
+            });

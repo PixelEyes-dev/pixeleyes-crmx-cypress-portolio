@@ -224,3 +224,125 @@ declare global {
   }
 }
 */
+
+// ============================================
+// SCREENSHOT AND VIDEO RECORDING COMMANDS
+// ============================================
+
+/**
+ * Take screenshot with custom name and timestamp
+ * @param {string} name - Screenshot name
+ * @param {Object} options - Screenshot options
+ */
+Cypress.Commands.add("takeScreenshot", (name, options = {}) => {
+  const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+  const screenshotName = `${name}-${timestamp}`;
+  cy.screenshot(screenshotName, options);
+});
+
+/**
+ * Take screenshot at specific test step
+ * @param {string} stepName - Name of the test step
+ */
+Cypress.Commands.add("screenshotAtStep", (stepName) => {
+  const testName = Cypress.currentTest.title;
+  const stepScreenshotName = `${testName}-${stepName}`;
+  cy.takeScreenshot(stepScreenshotName);
+});
+
+/**
+ * Take screenshot on failure with detailed context
+ */
+Cypress.Commands.add("screenshotOnFailure", () => {
+  cy.on("fail", (error) => {
+    const testName = Cypress.currentTest.title;
+    const failureScreenshotName = `${testName}-FAILURE`;
+    cy.screenshot(failureScreenshotName);
+    throw error; // Re-throw the error to maintain test failure
+  });
+});
+
+/**
+ * Take screenshot before and after an action
+ * @param {Function} action - Action to perform
+ * @param {string} actionName - Name of the action
+ */
+Cypress.Commands.add("screenshotAroundAction", (action, actionName) => {
+  const testName = Cypress.currentTest.title;
+
+  // Screenshot before action
+  cy.takeScreenshot(`${testName}-before-${actionName}`);
+
+  // Perform the action
+  action();
+
+  // Screenshot after action
+  cy.takeScreenshot(`${testName}-after-${actionName}`);
+});
+
+/**
+ * Take screenshot of specific element
+ * @param {string} selector - Element selector
+ * @param {string} name - Screenshot name
+ */
+Cypress.Commands.add("screenshotElement", (selector, name) => {
+  cy.get(selector).screenshot(name);
+});
+
+/**
+ * Take screenshot of full page
+ * @param {string} name - Screenshot name
+ */
+Cypress.Commands.add("screenshotFullPage", (name) => {
+  cy.screenshot(name, { capture: "fullPage" });
+});
+
+/**
+ * Take screenshot of viewport only
+ * @param {string} name - Screenshot name
+ */
+Cypress.Commands.add("screenshotViewport", (name) => {
+  cy.screenshot(name, { capture: "viewport" });
+});
+
+// ============================================
+// TEST RECORDING UTILITIES
+// ============================================
+
+/**
+ * Start recording a test session
+ * @param {string} sessionName - Name of the test session
+ */
+Cypress.Commands.add("startRecording", (sessionName) => {
+  const timestamp = new Date().toISOString();
+  cy.log(`🎥 Starting recording: ${sessionName} at ${timestamp}`);
+  cy.takeScreenshot(`${sessionName}-start`);
+});
+
+/**
+ * End recording a test session
+ * @param {string} sessionName - Name of the test session
+ */
+Cypress.Commands.add("endRecording", (sessionName) => {
+  const timestamp = new Date().toISOString();
+  cy.log(`🎥 Ending recording: ${sessionName} at ${timestamp}`);
+  cy.takeScreenshot(`${sessionName}-end`);
+});
+
+/**
+ * Record test step with screenshot
+ * @param {string} stepName - Name of the test step
+ * @param {Function} stepAction - Action to perform
+ */
+Cypress.Commands.add("recordStep", (stepName, stepAction) => {
+  cy.log(`📸 Recording step: ${stepName}`);
+  cy.takeScreenshot(`step-${stepName}-before`);
+
+  if (stepAction) {
+    stepAction();
+  }
+
+  cy.takeScreenshot(`step-${stepName}-after`);
+});
+
+// ============================================
