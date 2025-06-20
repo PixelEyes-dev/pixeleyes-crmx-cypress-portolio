@@ -6,6 +6,12 @@ on:
   push:
     branches: [main, master]
 
+# Add permissions for commenting on PRs
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
 jobs:
   cypress-run:
     runs-on: ubuntu-latest
@@ -39,16 +45,16 @@ jobs:
           name: cypress-screenshots-${{ github.run_number }}
           path: cypress/screenshots
           if-no-files-found: ignore
-          retention-days: 30
+          retention-days: 7
 
       - name: Upload videos
         uses: actions/upload-artifact@v4
-        if: always()
+        if: failure()
         with:
           name: cypress-videos-${{ github.run_number }}
           path: cypress/videos
           if-no-files-found: ignore
-          retention-days: 30
+          retention-days: 7
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
@@ -57,7 +63,7 @@ jobs:
           name: cypress-results-${{ github.run_number }}
           path: cypress/results
           if-no-files-found: ignore
-          retention-days: 30
+          retention-days: 7
 
       - name: Comment test results on PR
         if: github.event_name == 'pull_request'
@@ -97,9 +103,12 @@ jobs:
               }
             }
 
+            // Determine test status based on job status
+            const testStatus = process.env.CYPRESS_RESULT === '0' ? '✅ Passed' : '❌ Failed';
+
             const message = `## 🧪 Cypress Test Results
 
-            **Status:** ${process.env.CYPRESS_RESULT === '0' ? '✅ Passed' : '❌ Failed'}
+            **Status:** ${testStatus}
             **Run Number:** #${context.runNumber}
 
             ${screenshotMessage}
