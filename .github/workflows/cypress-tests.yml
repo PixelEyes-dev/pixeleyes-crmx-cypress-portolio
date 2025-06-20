@@ -29,7 +29,9 @@ jobs:
         run: npm ci
 
       - name: Run Cypress tests
+        id: cypress
         uses: cypress-io/github-action@v6
+        continue-on-error: true
         env:
           CYPRESS_USER_EMAIL: ${{ secrets.CYPRESS_USER_EMAIL }}
           CYPRESS_USER_PASSWORD: ${{ secrets.CYPRESS_USER_PASSWORD }}
@@ -103,8 +105,9 @@ jobs:
               }
             }
 
-            // Determine test status based on job status
-            const testStatus = process.env.CYPRESS_RESULT === '0' ? '✅ Passed' : '❌ Failed';
+            // Determine test status from the Cypress step's outcome
+            const testOutcome = '${{ steps.cypress.outcome }}';
+            const testStatus = testOutcome === 'success' ? '✅ Passed' : '❌ Failed';
 
             const message = `## 🧪 Cypress Test Results
 
@@ -122,3 +125,7 @@ jobs:
               repo: context.repo.repo,
               body: message
             });
+
+      - name: Fail workflow if tests failed
+        if: steps.cypress.outcome == 'failure'
+        run: exit 1
