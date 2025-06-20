@@ -42,7 +42,7 @@ jobs:
 
       - name: Upload screenshots
         uses: actions/upload-artifact@v4
-        if: failure()
+        if: steps.cypress.outcome == 'failure'
         with:
           name: cypress-screenshots-${{ github.run_number }}
           path: cypress/screenshots
@@ -51,7 +51,7 @@ jobs:
 
       - name: Upload videos
         uses: actions/upload-artifact@v4
-        if: failure()
+        if: steps.cypress.outcome == 'failure'
         with:
           name: cypress-videos-${{ github.run_number }}
           path: cypress/videos
@@ -109,6 +109,10 @@ jobs:
             const testOutcome = '${{ steps.cypress.outcome }}';
             const testStatus = testOutcome === 'success' ? '✅ Passed' : '❌ Failed';
 
+            // Create a link to the workflow run's artifacts
+            const artifactUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const artifactLink = `📦 [**Download artifacts**](${artifactUrl})`;
+
             const message = `## 🧪 Cypress Test Results
 
             **Status:** ${testStatus}
@@ -117,7 +121,7 @@ jobs:
             ${screenshotMessage}
             ${videoMessage}
 
-            📦 **Artifacts available for download above**`;
+            ${artifactLink}`;
 
             github.rest.issues.createComment({
               issue_number: context.issue.number,
