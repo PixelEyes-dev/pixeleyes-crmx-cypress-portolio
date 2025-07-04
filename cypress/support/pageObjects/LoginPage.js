@@ -2,15 +2,38 @@ class LoginPage {
   homePageTitle() {
     return cy.get("#authTitle");
   }
-  emailInput() {
+  signInEmailTextBox() {
     return cy.get("#signInEmailInput");
   }
-  passwordInput() {
+  signInPasswordTextBox() {
     return cy.get("#signInPasswordInput");
   }
   loginButton() {
     return cy.get("#signInButton");
   }
+  signUpTab() {
+    return cy.get("#signUpTab");
+  }
+  firstNameTextBox() {
+    return cy.get("#firstNameInput");
+  }
+  lastNameTextBox() {
+    return cy.get("#lastNameInput");
+  }
+  organizationNameTextBox() {
+    return cy.get("#organizationInput");
+  }
+  signUpEmailTextBox() {
+    return cy.get("#signUpEmailInput");
+  }
+  signUpPasswordTextBox() {
+    return cy.get("#signUpPasswordInput");
+  }
+  createAccountButton() {
+    return cy.get("#createAccountButton");
+  }
+  invalidLoginMessage() {
+    return cy.get("#authErrorMessage");
+  }
 }
-
 export default new LoginPage();

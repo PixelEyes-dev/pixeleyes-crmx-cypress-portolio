@@ -389,4 +389,9 @@ This setup ensures you have comprehensive visual documentation of your test exec
 
 ---
 
-**Note**: This portfolio demonstrates comprehensive QA automation skills using Cypress for CRM application testing. The tests cover various scenarios including authentication, data management, reporting, and user interface validation.
+**Note**: This portfolio demonstrates comprehensive QA automation skills using Cypress for CRM application testing. The tests cover various scenarios including authentication, data management, reporting, and user interface validation
+#   T e s t   c o m m i t 
+ 
+ 
+
+Minor change to Readme to verify changes in GH run
