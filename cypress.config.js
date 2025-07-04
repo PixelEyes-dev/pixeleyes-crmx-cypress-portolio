@@ -1,7 +1,7 @@
 const { defineConfig } = require("cypress");
 const path = require("path");
 const { createClient } = require("@supabase/supabase-js");
-const dbUtils = require("./cypress/support/dbUtils.js");
+const dbUtils = require("./cypress/support/dbUtils.cjs");
 
 // Explicitly load .env from the project root
 require("dotenv").config({ path: path.resolve(__dirname, ".env") });
