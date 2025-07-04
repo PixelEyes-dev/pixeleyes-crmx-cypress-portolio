@@ -9,6 +9,7 @@
 // ***********************************************
 
 import LoginPage from "./pageObjects/LoginPage";
+import DashboardPage from "./pageObjects/DashboardPage";
 
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
@@ -27,12 +28,12 @@ Cypress.Commands.add("login", (email = null, password = null) => {
   const userPassword = password || Cypress.env("CYPRESS_USER_PASSWORD");
 
   cy.visit("/");
-  LoginPage.homePageTitle().should("have.text", "Welcome to CRMx111");
-  LoginPage.emailInput().type(userEmail);
-  LoginPage.passwordInput().type(userPassword);
+  LoginPage.homePageTitle().should("have.text", "Welcome to CRMx");
+  LoginPage.signInEmailTextBox().type(userEmail);
+  LoginPage.signInPasswordTextBox().type(userPassword);
   LoginPage.loginButton().click();
   cy.url().should("include", "/dashboard");
-  cy.get(".flex h1").should("have.text", "Dashboard");
+  DashboardPage.dashboardTitle().should("have.text", "Dashboard");
 });
 
 /**

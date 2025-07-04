@@ -16,6 +16,9 @@ cypress/downloads/
 .env.test.local
 .env.production.local
 
+# Certificates
+*.crt
+
 # IDE
 .vscode/
 .idea/

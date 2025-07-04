@@ -2,11 +2,10 @@ name: Cypress Tests
 
 on:
   pull_request:
-    branches: [main, master]
+    branches: [main, develop]
   push:
-    branches: [main, master]
+    branches: [main, develop]
 
-# Add permissions for commenting on PRs
 permissions:
   contents: read
   pull-requests: write
@@ -14,9 +13,16 @@ permissions:
 
 jobs:
   cypress-run:
+    name: Cypress E2E Tests (Production)
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    # Add environment for better tracking
+    env:
+      CYPRESS_ENVIRONMENT: production
+
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup Node.js
@@ -28,17 +34,40 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run Cypress tests
+      - name: Create .env file
+        run: |
+          echo "CYPRESS_USER_EMAIL=${{ secrets.CYPRESS_USER_EMAIL }}" > .env
+          echo "CYPRESS_USER_PASSWORD=${{ secrets.CYPRESS_USER_PASSWORD }}" >> .env
+          echo "CYPRESS_BASE_URL=https://www.crmx.mx" >> .env
+          echo "CYPRESS_ENVIRONMENT=production" >> .env
+          echo "SUPABASE_DB_HOST=${{ secrets.SUPABASE_DB_HOST }}" >> .env
+          echo "SUPABASE_DB_PORT=${{ secrets.SUPABASE_DB_PORT }}" >> .env
+          echo "SUPABASE_DB_NAME=${{ secrets.SUPABASE_DB_NAME }}" >> .env
+          echo "SUPABASE_DB_USER=${{ secrets.SUPABASE_DB_USER }}" >> .env
+          echo "SUPABASE_DB_PASSWORD=${{ secrets.SUPABASE_DB_PASSWORD }}" >> .env
+          echo "SUPABASE_DB_SSL=${{ secrets.SUPABASE_DB_SSL }}" >> .env
+          echo "CYPRESS_SUPABASE_URL=${{ secrets.CYPRESS_SUPABASE_URL }}" >> .env
+          echo "CYPRESS_SUPABASE_ANON_KEY=${{ secrets.CYPRESS_SUPABASE_ANON_KEY }}" >> .env
+
+      - name: Verify production environment
+        run: |
+          echo "🚨 Running tests against PRODUCTION environment: https://www.crmx.mx"
+          echo "⚠️  Using test credentials from GitHub secrets"
+          echo "📋 Tests: userLogin.cy.js, userOnboarding.cy.js"
+          echo "🗄️  Database connection tests included"
+          echo "🔐 Database credentials configured from secrets"
+
+      - name: Run Cypress tests against production
         id: cypress
         uses: cypress-io/github-action@v6
         continue-on-error: true
-        env:
-          CYPRESS_USER_EMAIL: ${{ secrets.CYPRESS_USER_EMAIL }}
-          CYPRESS_USER_PASSWORD: ${{ secrets.CYPRESS_USER_PASSWORD }}
         with:
           browser: chrome
-          spec: cypress/e2e/authentication/userLogin.cy.js
           record: false
+          config: video=true,screenshotOnRunFailure=true
+          spec: cypress/e2e/authentication/userLogin.cy.js,cypress/e2e/onboarding/userOnboarding.cy.js
+          wait-on: "https://www.crmx.mx"
+          wait-on-timeout: 120
 
       - name: Upload screenshots
         uses: actions/upload-artifact@v4
@@ -74,16 +103,10 @@ jobs:
           script: |
             const fs = require('fs');
             const path = require('path');
-
-            // Determine test status from the Cypress step's outcome
             const testOutcome = '${{ steps.cypress.outcome }}';
             const testStatus = testOutcome === 'success' ? '✅ Passed' : '❌ Failed';
-
             let messageBody = `**Status:** ${testStatus}\n**Run Number:** #${context.runNumber}`;
-
-            // Only add artifact details if the tests failed
             if (testOutcome === 'failure') {
-              // Check for screenshots
               const screenshotsPath = 'cypress/screenshots';
               if (fs.existsSync(screenshotsPath)) {
                 const screenshots = fs.readdirSync(screenshotsPath, { recursive: true }).filter(file => file.endsWith('.png'));
@@ -91,8 +114,6 @@ jobs:
                   messageBody += '\n\n📸 **Screenshots captured:**\n- ' + screenshots.join('\n- ');
                 }
               }
-
-              // Check for videos
               const videosPath = 'cypress/videos';
               if (fs.existsSync(videosPath)) {
                 const videos = fs.readdirSync(videosPath).filter(file => file.endsWith('.mp4'));
@@ -100,14 +121,10 @@ jobs:
                   messageBody += '\n\n🎥 **Videos recorded:**\n- ' + videos.join('\n- ');
                 }
               }
-
-              // Add a link to the workflow run's artifacts
               const artifactUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
               messageBody += `\n\n📦 [**Download artifacts**](${artifactUrl})`;
             }
-
             const message = `## 🧪 Cypress Test Results\n\n${messageBody}`;
-
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
