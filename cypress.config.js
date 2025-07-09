@@ -9,7 +9,18 @@ require("dotenv").config({ path: path.resolve(__dirname, ".env") });
 module.exports = defineConfig({
   e2e: {
     baseUrl: "https://www.crmx.mx", // Production environment
+    reporter: "cypress-mochawesome-reporter",
+    reporterOptions: {
+      charts: true,
+      reportPageTitle: "CRMx Test Results",
+      embeddedScreenshots: true,
+      inlineAssets: true,
+      saveAllAttempts: false,
+    },
     setupNodeEvents(on, config) {
+      // Add cypress-mochawesome-reporter plugin
+      require("cypress-mochawesome-reporter/plugin")(on);
+
       // Add custom Supabase query task
       on("task", {
         async querySupabase({ table, filter }) {
@@ -112,7 +123,7 @@ module.exports = defineConfig({
     videoCompression: 32,
     screenshotOnRunFailure: true,
     screenshotOnHeadlessFailure: true,
-    trashAssetsBeforeRuns: true,
+    trashAssetsBeforeRuns: process.env.CI ? false : true, // Keep reports in CI, overwrite locally
     // Better error reporting
     retries: {
       runMode: 1,
