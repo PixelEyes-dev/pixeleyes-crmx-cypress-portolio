@@ -168,12 +168,86 @@ The project is ready for CI/CD integration with:
 
 ## 📈 Reporting
 
+### Built-in Cypress Reporting
+
 Cypress provides built-in reporting features:
 
 - Video recordings of test runs
 - Screenshots on failures
 - Detailed test logs
-- HTML reports (with additional plugins)
+
+### Cypress Mochawesome HTML Reports
+
+This project includes cypress-mochawesome-reporter for beautiful, interactive HTML reports specifically designed for Cypress:
+
+#### Generate Reports
+
+```bash
+# Run all tests and generate HTML report
+npm run test:report
+
+# Run specific test file and generate report
+npx cypress run --spec cypress/e2e/mochawesome-test.cy.js --headed --browser chrome
+
+# Run tests in headless mode
+npx cypress run --spec cypress/e2e/mochawesome-test.cy.js
+
+# Clean previous reports
+npm run clean-reports
+```
+
+#### View Reports
+
+After running tests, the HTML report is automatically generated in:
+
+```
+cypress/reports/html/index.html
+```
+
+**To open the report:**
+
+1. **Direct file path in browser:**
+
+   ```
+   file:///C:/Users/Guille/Documents/programming/projects/pixeleyes-crmx-cypress-portolio/cypress/reports/html/index.html
+   ```
+
+2. **From File Explorer:**
+
+   - Navigate to: `cypress/reports/html/`
+   - Double-click on `index.html`
+
+3. **From terminal:**
+   ```bash
+   start cypress\reports\html\index.html
+   ```
+
+#### Report Features
+
+- **Interactive Dashboard**: Beautiful, responsive HTML reports
+- **Test Results Summary**: Pass/fail statistics with charts
+- **Detailed Test Logs**: Step-by-step test execution details
+- **Screenshots Integration**: Automatic screenshot capture on failures
+- **Video Integration**: Embedded video recordings
+- **Search & Filter**: Easy navigation through test results
+- **Export Options**: Share reports as HTML files
+- **Cypress-Specific**: Optimized for Cypress test results
+
+#### Report Location
+
+Reports are automatically generated in the `cypress/reports/` directory:
+
+- `cypress/reports/mochawesome.html` - Interactive HTML report
+- `cypress/reports/mochawesome.json` - Test results data
+- `cypress/reports/assets/` - Report assets (CSS, JS, images)
+
+#### Report Configuration
+
+The reporter is configured in `cypress.config.js` with:
+
+- **Plugin Registration**: `require('cypress-mochawesome-reporter/plugin')(on)`
+- **Support Registration**: `import 'cypress-mochawesome-reporter/register'`
+- **Reporter Options**: Charts, embedded screenshots, and custom page title
 
 ## 🤝 Contributing
 
