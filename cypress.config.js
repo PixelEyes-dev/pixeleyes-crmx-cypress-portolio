@@ -123,7 +123,7 @@ module.exports = defineConfig({
     videoCompression: 32,
     screenshotOnRunFailure: true,
     screenshotOnHeadlessFailure: true,
-    trashAssetsBeforeRuns: true,
+    trashAssetsBeforeRuns: process.env.CI ? false : true, // Keep reports in CI, overwrite locally
     // Better error reporting
     retries: {
       runMode: 1,

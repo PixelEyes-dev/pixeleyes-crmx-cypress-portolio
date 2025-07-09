@@ -249,6 +249,32 @@ The reporter is configured in `cypress.config.js` with:
 - **Support Registration**: `import 'cypress-mochawesome-reporter/register'`
 - **Reporter Options**: Charts, embedded screenshots, and custom page title
 
+#### Report Override Behavior
+
+The project uses environment-aware configuration for report management:
+
+**Local Development (Default):**
+
+- **HTML Reports**: Each run replaces `cypress/reports/html/index.html`
+- **Videos**: Previous videos are deleted before new runs
+- **Screenshots**: Previous screenshots are deleted before new runs
+- **Setting**: `trashAssetsBeforeRuns: true` (keeps workspace clean)
+
+**CI/CD Environment:**
+
+- **Reports Preserved**: Historical data kept for analysis
+- **Videos**: Previous videos are preserved
+- **Screenshots**: Previous screenshots are preserved
+- **Setting**: `trashAssetsBeforeRuns: false` (when `process.env.CI` is true)
+
+**Configuration:**
+
+```javascript
+trashAssetsBeforeRuns: process.env.CI ? false : true;
+```
+
+This automatically adapts based on the environment - clean runs locally, preserved history in CI/CD.
+
 ## 🤝 Contributing
 
 1. Fork the repository
