@@ -1053,6 +1053,415 @@ const industries = [
   "Virtual Reality",
 ];
 
+// New data arrays for enhanced functionality
+const positions = [
+  "CEO",
+  "CTO",
+  "CFO",
+  "COO",
+  "VP of Sales",
+  "VP of Marketing",
+  "VP of Engineering",
+  "VP of Operations",
+  "Director of Sales",
+  "Director of Marketing",
+  "Director of Engineering",
+  "Director of Operations",
+  "Manager",
+  "Senior Manager",
+  "Team Lead",
+  "Senior Developer",
+  "Developer",
+  "Junior Developer",
+  "Product Manager",
+  "Project Manager",
+  "Business Analyst",
+  "Data Analyst",
+  "Marketing Specialist",
+  "Sales Representative",
+  "Customer Success Manager",
+  "Account Executive",
+  "Sales Manager",
+  "Marketing Manager",
+  "Operations Manager",
+  "Human Resources Manager",
+  "Finance Manager",
+  "Legal Counsel",
+  "Administrative Assistant",
+  "Executive Assistant",
+  "Receptionist",
+  "Consultant",
+  "Advisor",
+  "Specialist",
+  "Coordinator",
+  "Supervisor",
+  "Lead",
+  "Principal",
+  "Architect",
+  "Engineer",
+  "Designer",
+  "Analyst",
+  "Coordinator",
+  "Assistant",
+  "Intern",
+  "Trainee",
+];
+
+const sources = ["website", "referral", "marketing", "social", "other"];
+
+const leadStatuses = ["New", "Contacted", "Qualified", "Unqualified"];
+
+const countries = ["Mexico", "United States", "Canada", "Brazil"];
+
+const statesByCountry = {
+  Mexico: [
+    "Aguascalientes",
+    "Baja California",
+    "Baja California Sur",
+    "Campeche",
+    "Chiapas",
+    "Chihuahua",
+    "Coahuila",
+    "Colima",
+    "Ciudad de México",
+    "Durango",
+    "Guanajuato",
+    "Guerrero",
+    "Hidalgo",
+    "Jalisco",
+    "Estado de México",
+    "Michoacán",
+    "Morelos",
+    "Nayarit",
+    "Nuevo León",
+    "Oaxaca",
+    "Puebla",
+    "Querétaro",
+    "Quintana Roo",
+    "San Luis Potosí",
+    "Sinaloa",
+    "Sonora",
+    "Tabasco",
+    "Tamaulipas",
+    "Tlaxcala",
+    "Veracruz",
+    "Yucatán",
+    "Zacatecas",
+  ],
+  "United States": [
+    "Alabama",
+    "Alaska",
+    "Arizona",
+    "Arkansas",
+    "California",
+    "Colorado",
+    "Connecticut",
+    "Delaware",
+    "Florida",
+    "Georgia",
+    "Hawaii",
+    "Idaho",
+    "Illinois",
+    "Indiana",
+    "Iowa",
+    "Kansas",
+    "Kentucky",
+    "Louisiana",
+    "Maine",
+    "Maryland",
+    "Massachusetts",
+    "Michigan",
+    "Minnesota",
+    "Mississippi",
+    "Missouri",
+    "Montana",
+    "Nebraska",
+    "Nevada",
+    "New Hampshire",
+    "New Jersey",
+    "New Mexico",
+    "New York",
+    "North Carolina",
+    "North Dakota",
+    "Ohio",
+    "Oklahoma",
+    "Oregon",
+    "Pennsylvania",
+    "Rhode Island",
+    "South Carolina",
+    "South Dakota",
+    "Tennessee",
+    "Texas",
+    "Utah",
+    "Vermont",
+    "Virginia",
+    "Washington",
+    "West Virginia",
+    "Wisconsin",
+    "Wyoming",
+  ],
+  Canada: [
+    "Alberta",
+    "British Columbia",
+    "Manitoba",
+    "New Brunswick",
+    "Newfoundland and Labrador",
+    "Northwest Territories",
+    "Nova Scotia",
+    "Nunavut",
+    "Ontario",
+    "Prince Edward Island",
+    "Quebec",
+    "Saskatchewan",
+    "Yukon",
+  ],
+  Brazil: [
+    "Acre",
+    "Alagoas",
+    "Amapá",
+    "Amazonas",
+    "Bahia",
+    "Ceará",
+    "Distrito Federal",
+    "Espírito Santo",
+    "Goiás",
+    "Maranhão",
+    "Mato Grosso",
+    "Mato Grosso do Sul",
+    "Minas Gerais",
+    "Pará",
+    "Paraíba",
+    "Paraná",
+    "Pernambuco",
+    "Piauí",
+    "Rio de Janeiro",
+    "Rio Grande do Norte",
+    "Rio Grande do Sul",
+    "Rondônia",
+    "Roraima",
+    "Santa Catarina",
+    "São Paulo",
+    "Sergipe",
+    "Tocantins",
+  ],
+};
+
+const citiesByState = {
+  // Mexico cities
+  Aguascalientes: [
+    "Aguascalientes",
+    "Calvillo",
+    "Jesús María",
+    "Rincón de Romos",
+  ],
+  "Baja California": ["Tijuana", "Mexicali", "Ensenada", "La Paz"],
+  "Baja California Sur": ["La Paz", "Los Cabos", "Loreto", "Comondú"],
+  Campeche: ["Campeche", "Ciudad del Carmen", "Champotón", "Escárcega"],
+  Chiapas: [
+    "Tuxtla Gutiérrez",
+    "San Cristóbal de las Casas",
+    "Tapachula",
+    "Comitán",
+  ],
+  Chihuahua: ["Chihuahua", "Ciudad Juárez", "Delicias", "Cuauhtémoc"],
+  Coahuila: ["Saltillo", "Torreón", "Monclova", "Piedras Negras"],
+  Colima: ["Colima", "Manzanillo", "Villa de Álvarez", "Comala"],
+  "Ciudad de México": [
+    "Ciudad de México",
+    "Coyoacán",
+    "Iztapalapa",
+    "Gustavo A. Madero",
+  ],
+  Durango: ["Durango", "Gómez Palacio", "El Oro"],
+  Guanajuato: ["León", "Irapuato", "Celaya", "Salamanca"],
+  Guerrero: ["Acapulco", "Chilpancingo", "Iguala", "Taxco"],
+  Hidalgo: ["Pachuca", "Tula", "Tizayuca", "Ixmiquilpan"],
+  Jalisco: ["Guadalajara", "Zapopan", "Tlaquepaque", "Tonalá"],
+  México: ["Ecatepec", "Nezahualcóyotl", "Naucalpan", "Toluca"],
+  Michoacán: ["Morelia", "Uruapan", "Zamora", "Lázaro Cárdenas"],
+  Morelos: ["Cuernavaca", "Jiutepec", "Ayala", "Emiliano Zapata"],
+  Nayarit: ["Tepic", "Bahía de Banderas", "Ixtlán del Río", "Xalisco"],
+  "Nuevo León": [
+    "Monterrey",
+    "Guadalupe",
+    "San Nicolás de los Garza",
+    "Santa Catarina",
+  ],
+  Oaxaca: [
+    "Oaxaca de Juárez",
+    "Tuxtepec",
+    "Salina Cruz",
+    "Santa Cruz Xoxocotlán",
+  ],
+  Puebla: ["Puebla", "Amozoc", "San Pedro Cholula", "San Andrés Cholula"],
+  Querétaro: ["Querétaro", "San Juan del Río", "Corregidora", "El Marqués"],
+  "Quintana Roo": ["Cancún", "Chetumal", "Playa del Carmen", "Cozumel"],
+  "San Luis Potosí": [
+    "San Luis Potosí",
+    "Soledad de Graciano Sánchez",
+    "Ciudad Valles",
+    "Matehuala",
+  ],
+  Sinaloa: ["Culiacán", "Mazatlán", "Los Mochis", "Guasave"],
+  Sonora: ["Hermosillo", "Ciudad Obregón", "Nogales", "San Luis Río Colorado"],
+  Tabasco: ["Villahermosa", "Cárdenas", "Comalcalco", "Huimanguillo"],
+  Tamaulipas: ["Reynosa", "Matamoros", "Nuevo Laredo", "Victoria"],
+  Tlaxcala: ["Tlaxcala", "San Pablo del Monte", "Calpulalpan", "Apizaco"],
+  Veracruz: ["Veracruz", "Xalapa", "Coatzacoalcos", "Córdoba"],
+  Yucatán: ["Mérida", "Valladolid", "Progreso", "Izamal"],
+  Zacatecas: ["Zacatecas", "Fresnillo", "Sombrerete"],
+
+  // US cities (major cities for each state)
+  Alabama: ["Birmingham", "Montgomery", "Huntsville", "Mobile"],
+  Alaska: ["Anchorage", "Fairbanks", "Juneau", "Sitka"],
+  Arizona: ["Phoenix", "Tucson", "Mesa", "Chandler"],
+  Arkansas: ["Little Rock", "Fort Smith", "Fayetteville", "Springdale"],
+  California: ["Los Angeles", "San Francisco", "San Diego", "San Jose"],
+  Colorado: ["Denver", "Colorado Springs", "Aurora", "Fort Collins"],
+  Connecticut: ["Bridgeport", "New Haven", "Stamford", "Hartford"],
+  Delaware: ["Wilmington", "Dover", "Newark", "Middletown"],
+  Florida: ["Jacksonville", "Miami", "Tampa", "Orlando"],
+  Georgia: ["Atlanta", "Augusta", "Columbus", "Macon"],
+  Hawaii: ["Honolulu", "Hilo", "Kailua", "Kapolei"],
+  Idaho: ["Boise", "Meridian", "Nampa", "Idaho Falls"],
+  Illinois: ["Chicago", "Aurora", "Rockford", "Joliet"],
+  Indiana: ["Indianapolis", "Fort Wayne", "Evansville", "South Bend"],
+  Iowa: ["Des Moines", "Cedar Rapids", "Davenport", "Sioux City"],
+  Kansas: ["Wichita", "Overland Park", "Kansas City", "Topeka"],
+  Kentucky: ["Louisville", "Lexington", "Bowling Green", "Owensboro"],
+  Louisiana: ["New Orleans", "Baton Rouge", "Shreveport", "Lafayette"],
+  Maine: ["Portland", "Lewiston", "Bangor", "Auburn"],
+  Maryland: ["Baltimore", "Frederick", "Rockville", "Gaithersburg"],
+  Massachusetts: ["Boston", "Worcester", "Springfield", "Lowell"],
+  Michigan: ["Detroit", "Grand Rapids", "Warren", "Sterling Heights"],
+  Minnesota: ["Minneapolis", "Saint Paul", "Rochester", "Duluth"],
+  Mississippi: ["Jackson", "Gulfport", "Southaven", "Hattiesburg"],
+  Missouri: ["Kansas City", "St. Louis", "Springfield", "Columbia"],
+  Montana: ["Billings", "Missoula", "Great Falls", "Bozeman"],
+  Nebraska: ["Omaha", "Lincoln", "Bellevue", "Grand Island"],
+  Nevada: ["Las Vegas", "Henderson", "Reno", "Carson City"],
+  "New Hampshire": ["Manchester", "Nashua", "Concord", "Dover"],
+  "New Jersey": ["Newark", "Jersey City", "Paterson", "Elizabeth"],
+  "New Mexico": ["Albuquerque", "Las Cruces", "Rio Rancho", "Santa Fe"],
+  "New York": ["New York City", "Buffalo", "Rochester", "Yonkers"],
+  "North Carolina": ["Charlotte", "Raleigh", "Greensboro", "Durham"],
+  "North Dakota": ["Fargo", "Bismarck", "Grand Forks", "Minot"],
+  Ohio: ["Columbus", "Cleveland", "Cincinnati", "Toledo"],
+  Oklahoma: ["Oklahoma City", "Tulsa", "Norman", "Broken Arrow"],
+  Oregon: ["Portland", "Salem", "Eugene", "Gresham"],
+  Pennsylvania: ["Philadelphia", "Pittsburgh", "Allentown", "Erie"],
+  "Rhode Island": ["Providence", "Warwick", "Cranston", "Pawtucket"],
+  "South Carolina": [
+    "Columbia",
+    "Charleston",
+    "North Charleston",
+    "Mount Pleasant",
+  ],
+  "South Dakota": ["Sioux Falls", "Rapid City", "Aberdeen", "Brookings"],
+  Tennessee: ["Nashville", "Memphis", "Knoxville", "Chattanooga"],
+  Texas: ["Houston", "San Antonio", "Dallas", "Austin"],
+  Utah: ["Salt Lake City", "West Valley City", "Provo", "West Jordan"],
+  Vermont: ["Burlington", "South Burlington", "Rutland", "Barre"],
+  Virginia: ["Virginia Beach", "Norfolk", "Arlington", "Richmond"],
+  Washington: ["Seattle", "Spokane", "Tacoma", "Vancouver"],
+  "West Virginia": ["Charleston", "Huntington", "Parkersburg", "Morgantown"],
+  Wisconsin: ["Milwaukee", "Madison", "Green Bay", "Kenosha"],
+  Wyoming: ["Cheyenne", "Casper", "Laramie", "Gillette"],
+
+  // Canada cities
+  Alberta: ["Calgary", "Edmonton", "Red Deer", "Lethbridge"],
+  "British Columbia": ["Vancouver", "Surrey", "Burnaby", "Richmond"],
+  Manitoba: ["Winnipeg", "Brandon", "Steinbach", "Thompson"],
+  "New Brunswick": ["Saint John", "Moncton", "Fredericton", "Dieppe"],
+  "Newfoundland and Labrador": [
+    "St. John's",
+    "Mount Pearl",
+    "Corner Brook",
+    "Grand Falls-Windsor",
+  ],
+  "Northwest Territories": ["Yellowknife", "Hay River", "Inuvik", "Fort Smith"],
+  "Nova Scotia": ["Halifax", "Sydney", "Dartmouth", "Truro"],
+  Nunavut: ["Iqaluit", "Rankin Inlet", "Arviat", "Baker Lake"],
+  Ontario: ["Toronto", "Ottawa", "Mississauga", "Brampton"],
+  "Prince Edward Island": [
+    "Charlottetown",
+    "Summerside",
+    "Stratford",
+    "Cornwall",
+  ],
+  Quebec: ["Montreal", "Quebec City", "Laval", "Gatineau"],
+  Saskatchewan: ["Saskatoon", "Regina", "Prince Albert", "Moose Jaw"],
+  Yukon: ["Whitehorse", "Dawson City", "Watson Lake", "Haines Junction"],
+
+  // Brazil cities
+  Acre: ["Rio Branco", "Cruzeiro do Sul", "Sena Madureira", "Tarauacá"],
+  Alagoas: ["Maceió", "Arapiraca", "Palmeira dos Índios", "Penedo"],
+  Amapá: ["Macapá", "Santana", "Laranjal do Jari", "Oiapoque"],
+  Amazonas: ["Manaus", "Parintins", "Itacoatiara", "Manacapuru"],
+  Bahia: ["Salvador", "Feira de Santana", "Vitória da Conquista", "Camaçari"],
+  Ceará: ["Fortaleza", "Caucaia", "Juazeiro do Norte", "Maracanaú"],
+  "Distrito Federal": ["Brasília", "Ceilândia", "Taguatinga", "Samambaia"],
+  "Espírito Santo": ["Vitória", "Vila Velha", "Serra", "Linhares"],
+  Goiás: ["Goiânia", "Aparecida de Goiânia", "Anápolis", "Rio Verde"],
+  Maranhão: ["São Luís", "Imperatriz", "Timon", "Codó"],
+  "Mato Grosso": ["Cuiabá", "Várzea Grande", "Rondonópolis", "Sinop"],
+  "Mato Grosso do Sul": ["Campo Grande", "Dourados", "Três Lagoas", "Corumbá"],
+  "Minas Gerais": ["Belo Horizonte", "Uberlândia", "Contagem", "Juiz de Fora"],
+  Pará: ["Belém", "Ananindeua", "Santarém", "Castanhal"],
+  Paraíba: ["João Pessoa", "Campina Grande", "Santa Rita", "Patos"],
+  Paraná: ["Curitiba", "Londrina", "Maringá", "Ponta Grossa"],
+  Pernambuco: ["Recife", "Jaboatão dos Guararapes", "Olinda", "Caruaru"],
+  Piauí: ["Teresina", "Parnaíba", "Picos", "Piripiri"],
+  "Rio de Janeiro": [
+    "Rio de Janeiro",
+    "São Gonçalo",
+    "Duque de Caxias",
+    "Nova Iguaçu",
+  ],
+  "Rio Grande do Norte": ["Natal", "Mossoró", "Parnamirim", "Ceará-Mirim"],
+  "Rio Grande do Sul": ["Porto Alegre", "Caxias do Sul", "Pelotas", "Canoas"],
+  Rondônia: ["Porto Velho", "Ji-Paraná", "Ariquemes", "Vilhena"],
+  Roraima: ["Boa Vista", "Rorainópolis", "Caracaraí", "Alto Alegre"],
+  "Santa Catarina": ["Florianópolis", "Joinville", "Blumenau", "São José"],
+  "São Paulo": ["São Paulo", "Guarulhos", "Campinas", "São Bernardo do Campo"],
+  Sergipe: ["Aracaju", "Nossa Senhora do Socorro", "Lagarto", "Itabaiana"],
+  Tocantins: ["Palmas", "Araguaína", "Gurupi", "Porto Nacional"],
+};
+
+const paymentStatuses = ["Paid", "Pending", "Overdue"];
+
+const paymentMethods = [
+  "Credit Card",
+  "Bank Transfer",
+  "Cash",
+  "Paypal",
+  "Other",
+];
+
+const taskTitles = [
+  "Call Lead/Customer",
+  "Send Email",
+  "Send Follow-up Email",
+  "Visit Lead/Customer",
+  "Request Legal Agreement",
+  "Meeting",
+  "Generate Quote",
+];
+
+const taskTypes = [
+  "Call",
+  "Email",
+  "Visit",
+  "Quote",
+  "Follow-up",
+  "Virtual Meeting",
+  "Meeting",
+];
+
+const taskStatuses = ["Pending", "In Progress", "Completed", "Canceled"];
+
+const taskPriorities = ["Low", "Medium", "High", "Urgent"];
+
 /**
  * Generate a random integer between min and max (inclusive)
  * @param {number} min - Minimum value
@@ -1061,6 +1470,215 @@ const industries = [
  */
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+/**
+ * Generate a random decimal number between min and max with specified decimal places
+ * @param {number} min - Minimum value
+ * @param {number} max - Maximum value
+ * @param {number} decimals - Number of decimal places
+ * @returns {number} Random decimal number
+ */
+function getRandomDecimal(min, max, decimals = 1) {
+  const randomNum = Math.random() * (max - min) + min;
+  return parseFloat(randomNum.toFixed(decimals));
+}
+
+/**
+ * Generate a random social media handle
+ * @param {string} platform - Platform name (X, Instagram, Facebook, TikTok)
+ * @param {string} firstName - First name (optional)
+ * @param {string} lastName - Last name (optional)
+ * @returns {string} Random social media handle
+ */
+function generateSocialMediaHandle(
+  platform,
+  firstName = null,
+  lastName = null
+) {
+  const fName = (firstName || generateFirstName()).toLowerCase();
+  const lName = (lastName || generateLastName()).toLowerCase();
+  const randomNum = getRandomInt(1, 999);
+  const separators = ["", ".", "_", ""];
+  const separator = getRandomElement(separators);
+
+  switch (platform.toLowerCase()) {
+    case "x":
+    case "twitter":
+      return `@${fName}${separator}${lName}${randomNum}`;
+    case "instagram":
+      return `@${fName}${separator}${lName}${randomNum}`;
+    case "facebook":
+      return `${fName}${separator}${lName}${randomNum}`;
+    case "tiktok":
+      return `@${fName}${separator}${lName}${randomNum}`;
+    default:
+      return `@${fName}${separator}${lName}${randomNum}`;
+  }
+}
+
+/**
+ * Generate a random paragraph of text
+ * @param {number} sentences - Number of sentences to generate
+ * @returns {string} Random paragraph
+ */
+export function generateRandomParagraph(sentences = 3) {
+  const sentenceTemplates = [
+    "This company specializes in innovative solutions for modern businesses.",
+    "We provide cutting-edge technology services to help organizations grow.",
+    "Our team of experts delivers exceptional results through strategic planning.",
+    "With years of experience, we understand the unique challenges of the industry.",
+    "We focus on creating sustainable and scalable solutions for our clients.",
+    "Our commitment to excellence drives everything we do.",
+    "We leverage the latest technologies to deliver outstanding performance.",
+    "Our comprehensive approach ensures long-term success for our partners.",
+    "We pride ourselves on delivering high-quality services and products.",
+    "Our innovative solutions help businesses achieve their goals efficiently.",
+    "We work closely with clients to understand their specific needs.",
+    "Our proven track record speaks to our reliability and expertise.",
+    "We offer customized solutions tailored to each client's requirements.",
+    "Our dedicated team ensures timely delivery and exceptional service.",
+    "We maintain the highest standards of quality in all our offerings.",
+  ];
+
+  const selectedSentences = [];
+  for (let i = 0; i < sentences; i++) {
+    selectedSentences.push(getRandomElement(sentenceTemplates));
+  }
+
+  return selectedSentences.join(" ");
+}
+
+/**
+ * Generate a random address based on country
+ * @param {string} country - Country name
+ * @returns {Object} Random address object
+ */
+function generateAddressByCountry(country) {
+  const countryStates = statesByCountry[country] || [];
+  const state = getRandomElement(countryStates);
+  const stateCities = citiesByState[state] || [];
+  const city = getRandomElement(stateCities);
+
+  const streetNumber = getRandomInt(1, 9999);
+  const streetName = getRandomElement(streetNames);
+  const streetSuffix = getRandomElement(streetSuffixes);
+
+  let zipCode;
+  switch (country) {
+    case "Mexico":
+      zipCode = getRandomInt(10000, 99999).toString();
+      break;
+    case "United States":
+      zipCode = getRandomInt(10000, 99999).toString();
+      break;
+    case "Canada":
+      zipCode = `${getRandomElement([
+        "A",
+        "B",
+        "C",
+        "E",
+        "G",
+        "H",
+        "J",
+        "K",
+        "L",
+        "M",
+        "N",
+        "P",
+        "R",
+        "S",
+        "T",
+        "V",
+        "X",
+        "Y",
+      ])}${getRandomInt(0, 9)}${getRandomElement([
+        "A",
+        "B",
+        "C",
+        "E",
+        "G",
+        "H",
+        "J",
+        "K",
+        "L",
+        "M",
+        "N",
+        "P",
+        "R",
+        "S",
+        "T",
+        "V",
+        "W",
+        "X",
+        "Y",
+        "Z",
+      ])} ${getRandomInt(0, 9)}${getRandomElement([
+        "A",
+        "B",
+        "C",
+        "E",
+        "G",
+        "H",
+        "J",
+        "K",
+        "L",
+        "M",
+        "N",
+        "P",
+        "R",
+        "S",
+        "T",
+        "V",
+        "W",
+        "X",
+        "Y",
+        "Z",
+      ])}${getRandomInt(0, 9)}`;
+      break;
+    case "Brazil":
+      zipCode = `${getRandomInt(10000, 99999)}-${getRandomInt(100, 999)}`;
+      break;
+    default:
+      zipCode = getRandomInt(10000, 99999).toString();
+  }
+
+  return {
+    street: `${streetNumber} ${streetName} ${streetSuffix}`,
+    city: city,
+    state: state,
+    country: country,
+    zipCode: zipCode,
+    fullAddress: `${streetNumber} ${streetName} ${streetSuffix}, ${city}, ${state}, ${country} ${zipCode}`,
+  };
+}
+
+/**
+ * Generate a random invoice number
+ * @returns {string} Random invoice number
+ */
+function generateInvoiceNumber() {
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const letter1 = letters[getRandomInt(0, letters.length - 1)];
+  const letter2 = letters[getRandomInt(0, letters.length - 1)];
+  const letter3 = letters[getRandomInt(0, letters.length - 1)];
+  const numbers = getRandomInt(10000, 99999);
+  return `${letter1}${letter2}${letter3}-${numbers}`;
+}
+
+/**
+ * Generate a random date in the future
+ * @param {number} minDays - Minimum days from now
+ * @param {number} maxDays - Maximum days from now
+ * @returns {string} Date in mm/dd/yyyy format
+ */
+function generateFutureDate(minDays = 1, maxDays = 30) {
+  const date = new Date();
+  date.setDate(date.getDate() + getRandomInt(minDays, maxDays));
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const year = date.getFullYear();
+  return `${month}/${day}/${year}`;
 }
 
 /**
@@ -1192,6 +1810,8 @@ export function generateCustomerData() {
   const firstName = generateFirstName();
   const lastName = generateLastName();
   const company = generateCompanyName();
+  const country = getRandomElement(countries);
+  const address = generateAddressByCountry(country);
 
   return {
     firstName: firstName,
@@ -1200,10 +1820,33 @@ export function generateCustomerData() {
     email: generateEmail(firstName, lastName),
     phone: generatePhoneNumber(),
     company: company,
+    position: getRandomElement(positions),
+    secondaryEmail: generateEmail(firstName, lastName),
+    website: `https://www.${company.toLowerCase().replace(/\s+/g, "")}.com`,
+    socialMediaX: generateSocialMediaHandle("X", firstName, lastName),
+    socialMediaInstagram: generateSocialMediaHandle(
+      "Instagram",
+      firstName,
+      lastName
+    ),
+    socialMediaFacebook: generateSocialMediaHandle(
+      "Facebook",
+      firstName,
+      lastName
+    ),
+    socialMediaTiktok: generateSocialMediaHandle("TikTok", firstName, lastName),
+    skypeId: `${firstName.toLowerCase()}.${lastName.toLowerCase()}${getRandomInt(
+      1,
+      999
+    )}`,
     jobTitle: generateJobTitle(),
     industry: generateIndustry(),
-    address: generateAddress(),
-    website: `https://www.${company.toLowerCase().replace(/\s+/g, "")}.com`,
+    description: generateRandomParagraph(4),
+    street: address.street,
+    country: address.country,
+    state: address.state,
+    city: address.city,
+    postalCode: address.zipCode,
     notes: `Test customer created on ${new Date().toISOString()}`,
   };
 }
@@ -1216,6 +1859,27 @@ export function generateLeadData() {
   const firstName = generateFirstName();
   const lastName = generateLastName();
   const company = generateCompanyName();
+  const country = getRandomElement(countries);
+  const address = generateAddressByCountry(country);
+
+  // Generate different countries for phone and mobile (can be different from address country)
+  // Exclude United States and Canada from phone/mobile country selection
+  const phoneMobileCountries = countries.filter(
+    (country) => country !== "United States" && country !== "Canada"
+  );
+  const phoneCountry = getRandomElement(phoneMobileCountries);
+  const mobileCountry = getRandomElement(phoneMobileCountries);
+
+  // Map countries to country codes
+  const countryCodeMap = {
+    Mexico: "+52",
+    Brazil: "+55",
+    Argentina: "+54",
+    Chile: "+56",
+    France: "+33",
+    Germany: "+49",
+    Spain: "+34",
+  };
 
   return {
     firstName: firstName,
@@ -1224,27 +1888,39 @@ export function generateLeadData() {
     email: generateEmail(firstName, lastName),
     phone: generatePhoneNumber(),
     company: company,
-    jobTitle: generateJobTitle(),
-    industry: generateIndustry(),
-    address: generateAddress(),
+    position: getRandomElement(positions),
+    secondaryEmail: generateEmail(firstName, lastName),
     website: `https://www.${company.toLowerCase().replace(/\s+/g, "")}.com`,
-    source: getRandomElement([
-      "Website",
-      "Referral",
-      "Social Media",
-      "Cold Call",
-      "Trade Show",
-      "Advertisement",
-    ]),
-    status: getRandomElement([
-      "New",
-      "Contacted",
-      "Qualified",
-      "Proposal",
-      "Negotiation",
-      "Closed Won",
-      "Closed Lost",
-    ]),
+    socialMediaX: generateSocialMediaHandle("X", firstName, lastName),
+    socialMediaInstagram: generateSocialMediaHandle(
+      "Instagram",
+      firstName,
+      lastName
+    ),
+    socialMediaFacebook: generateSocialMediaHandle(
+      "Facebook",
+      firstName,
+      lastName
+    ),
+    socialMediaTiktok: generateSocialMediaHandle("TikTok", firstName, lastName),
+    skypeId: `${firstName.toLowerCase()}.${lastName.toLowerCase()}${getRandomInt(
+      1,
+      999
+    )}`,
+    source: getRandomElement(sources),
+    sector: generateIndustry(),
+    status: getRandomElement(leadStatuses),
+    qualification: getRandomDecimal(1, 10, 1),
+    annualRevenue: getRandomInt(1000, 10000000),
+    employeesCount: getRandomInt(1, 5000),
+    description: generateRandomParagraph(4),
+    street: address.street,
+    country: address.country,
+    state: address.state,
+    city: address.city,
+    postalCode: address.zipCode,
+    phoneCountryCode: countryCodeMap[phoneCountry],
+    mobileCountryCode: countryCodeMap[mobileCountry],
     notes: `Test lead created on ${new Date().toISOString()}`,
   };
 }
@@ -1254,25 +1930,20 @@ export function generateLeadData() {
  * @returns {Object} Random sale data
  */
 export function generateSaleData() {
-  const amount = getRandomInt(1000, 100000);
-  const closeDate = new Date();
-  closeDate.setDate(closeDate.getDate() + getRandomInt(-30, 30));
+  const amount = getRandomInt(100, 10000);
+  const saleDate = new Date();
+  saleDate.setDate(saleDate.getDate() + getRandomInt(-30, 30));
 
   return {
     customerName: generateFullName(),
     company: generateCompanyName(),
     amount: amount,
     currency: getRandomElement(["USD", "EUR", "GBP", "CAD", "AUD"]),
-    closeDate: closeDate.toISOString().split("T")[0],
-    status: getRandomElement(["Open", "Closed Won", "Closed Lost", "Pending"]),
-    stage: getRandomElement([
-      "Prospecting",
-      "Qualification",
-      "Proposal",
-      "Negotiation",
-      "Closed",
-    ]),
-    probability: getRandomInt(10, 100),
+    saleDate: saleDate.toISOString().split("T")[0],
+    invoiceNumber: generateInvoiceNumber(),
+    paymentStatus: getRandomElement(paymentStatuses),
+    paymentMethod: getRandomElement(paymentMethods),
+    description: generateRandomParagraph(3),
     notes: `Test sale created on ${new Date().toISOString()}`,
   };
 }
@@ -1282,20 +1953,17 @@ export function generateSaleData() {
  * @returns {Object} Random task data
  */
 export function generateTaskData() {
-  const dueDate = new Date();
-  dueDate.setDate(dueDate.getDate() + getRandomInt(1, 30));
+  const scheduledDate = generateFutureDate(1, 30);
+  const executionDate = generateFutureDate(1, 30);
 
   return {
-    title: `Test Task ${getRandomInt(1, 1000)}`,
-    description: `This is a test task created on ${new Date().toISOString()}`,
-    dueDate: dueDate.toISOString().split("T")[0],
-    priority: getRandomElement(["Low", "Medium", "High", "Urgent"]),
-    status: getRandomElement([
-      "Not Started",
-      "In Progress",
-      "Completed",
-      "On Hold",
-    ]),
+    title: getRandomElement(taskTitles),
+    type: getRandomElement(taskTypes),
+    status: getRandomElement(taskStatuses),
+    priority: getRandomElement(taskPriorities),
+    scheduledDate: scheduledDate,
+    executionDate: executionDate,
+    description: generateRandomParagraph(3),
     assignedTo: generateFullName(),
     relatedTo: getRandomElement(["Customer", "Lead", "Sale", "General"]),
     notes: `Test task notes created on ${new Date().toISOString()}`,
@@ -1439,4 +2107,5 @@ export default {
   generateNoteData,
   generateMultipleRecords,
   generateUniqueId,
+  generateRandomParagraph,
 };
