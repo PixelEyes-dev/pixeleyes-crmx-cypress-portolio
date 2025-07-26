@@ -109,6 +109,28 @@ module.exports = defineConfig({
             return { deleted: false, organization: null };
           }
         },
+        async queryLeadByEmail(email) {
+          console.log(
+            `🔌 Connecting to database to query lead for email: ${email}`
+          );
+          await dbUtils.connect();
+          console.log(`🔍 Executing query for lead with email: ${email}`);
+          const lead = await dbUtils.findLeadByEmail(email);
+          console.log(
+            `📊 Query result:`,
+            lead ? "Lead found" : "No lead found"
+          );
+          await dbUtils.disconnect();
+          console.log(`🔌 Database connection closed`);
+          return lead;
+        },
+        async deleteLeadByEmail(email) {
+          console.log(`🗑️  Deleting lead with email: ${email}`);
+          await dbUtils.connect();
+          const result = await dbUtils.deleteLeadByEmail(email);
+          await dbUtils.disconnect();
+          return result;
+        },
       });
       config.env = {
         ...config.env,

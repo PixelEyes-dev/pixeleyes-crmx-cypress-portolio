@@ -12,6 +12,7 @@ describe("User Onboarding", () => {
 
   it("should onboard user", () => {
     cy.visit("/");
+    LoginPage.title().should("be.visible");
     LoginPage.signUpTab().click();
 
     cy.log("Generated user data:", userData);

@@ -205,6 +205,48 @@ class DatabaseUtils {
   }
 
   /**
+   * Find lead by email
+   * @param {string} email - Lead email
+   * @returns {Promise<Object|null>} Lead data or null
+   */
+  async findLeadByEmail(email) {
+    const query = `
+      SELECT id, first_name, last_name, email, company, phone, status, created_at, updated_at
+      FROM leads 
+      WHERE email = $1
+    `;
+
+    const result = await this.query(query, [email]);
+    return result.rows.length > 0 ? result.rows[0] : null;
+  }
+
+  /**
+   * Delete lead by email
+   * @param {string} email - Lead email
+   * @returns {Promise<Object>} Deletion result
+   */
+  async deleteLeadByEmail(email) {
+    console.log(`🗑️  Deleting lead with email: ${email}`);
+
+    // First, find the lead to get its details
+    const lead = await this.findLeadByEmail(email);
+
+    if (lead) {
+      // Delete the lead
+      const result = await this.query(
+        "DELETE FROM leads WHERE email = $1 RETURNING *",
+        [email]
+      );
+
+      console.log(`✅ Lead deleted:`, result.rows[0]);
+      return { deleted: true, lead: result.rows[0] };
+    } else {
+      console.log(`❌ No lead found to delete: ${email}`);
+      return { deleted: false, lead: null };
+    }
+  }
+
+  /**
    * Close database connection
    */
   async disconnect() {

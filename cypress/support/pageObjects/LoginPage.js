@@ -1,5 +1,14 @@
 class LoginPage {
-  homePageTitle() {
+  loginBody() {
+    return cy.get("body");
+  }
+  pageContainer() {
+    return cy.get("#authPageContainer");
+  }
+  logo() {
+    return cy.get("#authBranding");
+  }
+  title() {
     return cy.get("#authTitle");
   }
   signInEmailTextBox() {
