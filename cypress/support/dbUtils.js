@@ -50,24 +50,23 @@ class DatabaseUtils {
     }
 
     const dbConfig = {
-      host:
-        config.host ||
-        process.env.SUPABASE_DB_HOST ||
-        "aws-0-us-west-1.pooler.supabase.com",
+      host: config.host || process.env.SUPABASE_DB_HOST,
       port: config.port || process.env.SUPABASE_DB_PORT || 5432,
-      database: config.database || process.env.SUPABASE_DB_NAME || "postgres",
-      user:
-        config.user ||
-        process.env.SUPABASE_DB_USER ||
-        "postgres.zvznmlhfktxxvjcyjdpe",
+      database: config.database || process.env.SUPABASE_DB_NAME,
+      user: config.user || process.env.SUPABASE_DB_USER,
       password: config.password || process.env.SUPABASE_DB_PASSWORD,
       ssl: sslConfig,
     };
 
     // Validate required credentials
-    if (!dbConfig.password) {
+    if (
+      !dbConfig.host ||
+      !dbConfig.database ||
+      !dbConfig.user ||
+      !dbConfig.password
+    ) {
       throw new Error(
-        "Database password is required. Please set SUPABASE_DB_PASSWORD in your .env file."
+        "Database credentials are required. Please set SUPABASE_DB_HOST, SUPABASE_DB_NAME, SUPABASE_DB_USER, and SUPABASE_DB_PASSWORD in your .env file."
       );
     }
 
