@@ -13,10 +13,20 @@ A comprehensive Cypress test automation portfolio showcasing QA testing skills f
 - **Responsive Design**: Cross-device compatibility testing
 - **Custom Commands**: Reusable test utilities and helpers
 
+## 🔒 Security Notice
+
+⚠️ **IMPORTANT**: This repository contains test automation code for a CRM application. Before running these tests:
+
+1. **Use Test Environment**: Configure tests to run against a test/staging environment, not production
+2. **Test Credentials Only**: Use dedicated test user accounts, never production credentials
+3. **Environment Variables**: Copy `env.example` to `.env` and configure with your test environment values
+4. **Database Access**: Ensure database credentials are for a test database only
+
 ## 📋 Prerequisites
 
 - Node.js (v14 or higher)
 - npm or yarn package manager
+- Access to test environment (not production)
 
 ## 🛠️ Installation
 
@@ -31,6 +41,13 @@ cd pixeleyes-crmx-cypress-portolio
 
 ```bash
 npm install
+```
+
+3. Configure environment variables:
+
+```bash
+cp env.example .env
+# Edit .env with your test environment credentials
 ```
 
 ## 🧪 Running Tests
