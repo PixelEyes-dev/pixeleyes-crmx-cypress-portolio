@@ -158,8 +158,8 @@ describe('Generate Leads', () => {
           LeadsPage.customerFirstNameTextBox().should('be.visible');
           LeadsPage.convertLeadToCustomerSaveButton().should('be.visible').and('be.enabled');
 
-          CustomersPage.addNewcustomerAddressInformationTab().click();
-          CustomersPage.addNewCustomerAddressStreetTextBox().should('have.value', leadData.street);
+          cy.get('#customer-tab-address').click();
+          cy.get('#customer-input-street').should('have.value', leadData.street);
 
           LeadsPage.convertLeadToCustomerSaveButton().click();
           LeadsPage.successConfirmationMessage().should('contain', 'Lead converted to customer successfully');
