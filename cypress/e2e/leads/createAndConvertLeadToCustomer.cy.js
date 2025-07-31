@@ -157,7 +157,7 @@ describe('Generate Leads', () => {
           // Wait for the form to be fully ready by checking multiple elements
           LeadsPage.customerFirstNameTextBox().should('be.visible');
           LeadsPage.convertLeadToCustomerSaveButton().should('be.visible').and('be.enabled');
-
+          //Validate the address information tab is visible
           cy.get('#customer-tab-address').click();
           cy.get('#customer-input-street').should('have.value', leadData.street);
 
