@@ -28,8 +28,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
-          cache: "npm"
+          node-version: '18'
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
@@ -65,8 +65,8 @@ jobs:
           browser: chrome
           record: false
           config: video=true,screenshotOnRunFailure=true
-          spec: cypress/e2e/sanity/homePageSanity.cy.js,cypress/e2e/authentication/userLogin.cy.js,cypress/e2e/onboarding/userOnboarding.cy.js,cypress/e2e/leads/createLeadandDeleteFromBE.cy.js,cypress/e2e/leads/editLeadandDeleteFromFE.cy.js,cypress/e2e/leads/createAndConvertLeadToCustomer.cy.js
-          wait-on: "https://www.crmx.mx"
+          spec: cypress/e2e/sanity/homePageSanity.cy.js,cypress/e2e/authentication/userLogin.cy.js,cypress/e2e/onboarding/userOnboarding.cy.js,cypress/e2e/leads/createLeadandDeleteFromBE.cy.js,cypress/e2e/leads/editLeadandDeleteFromFE.cy.js,cypress/e2e/leads/createAndConvertLeadToCustomer.cy.js,cypress/e2e/customers/createCustomerandDeleteFromBE.cy.js,cypress/e2e/customers/editCustomerandDeleteFromFE.cy.js
+          wait-on: 'https://www.crmx.mx'
           wait-on-timeout: 120
 
       - name: Upload screenshots

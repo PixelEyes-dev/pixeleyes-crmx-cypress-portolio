@@ -158,6 +158,9 @@ describe('Generate Leads', () => {
           LeadsPage.customerFirstNameTextBox().should('be.visible');
           LeadsPage.convertLeadToCustomerSaveButton().should('be.visible').and('be.enabled');
 
+          CustomersPage.customerAddressInformationTab().click();
+          CustomersPage.addNewCustomerAddressStreetTextBox().should('have.value', leadData.street);
+
           LeadsPage.convertLeadToCustomerSaveButton().click();
           LeadsPage.successConfirmationMessage().should('contain', 'Lead converted to customer successfully');
           // break out of .each()
