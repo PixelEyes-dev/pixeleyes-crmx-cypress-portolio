@@ -158,7 +158,7 @@ describe('Generate Leads', () => {
           LeadsPage.customerFirstNameTextBox().should('be.visible');
           LeadsPage.convertLeadToCustomerSaveButton().should('be.visible').and('be.enabled');
 
-          CustomersPage.customerAddressInformationTab().click();
+          CustomersPage.addNewcustomerAddressInformationTab().click();
           CustomersPage.addNewCustomerAddressStreetTextBox().should('have.value', leadData.street);
 
           LeadsPage.convertLeadToCustomerSaveButton().click();
