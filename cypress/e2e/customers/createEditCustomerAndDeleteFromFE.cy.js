@@ -2,7 +2,7 @@
 
 import SideNavBar from '../../support/pageObjects/SideNavBar';
 import CustomersPage from '../../support/pageObjects/CustomersPage';
-import { generateCustomerData, generateRandomParagraph, generateEmail } from '../../support/testDataGenerator';
+import { generateCustomerData, generateEmail } from '../../support/testDataGenerator';
 
 describe('Create a new Customer', () => {
   let customerData;
