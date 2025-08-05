@@ -1,7 +1,7 @@
-const { Client } = require("pg");
-const fs = require("fs");
-const path = require("path");
-require("dotenv").config();
+const { Client } = require('pg');
+const fs = require('fs');
+const path = require('path');
+require('dotenv').config();
 
 /**
  * Database utility for direct PostgreSQL access in Cypress tests
@@ -20,33 +20,28 @@ class DatabaseUtils {
     let sslConfig = false;
 
     // Check if SSL is explicitly disabled via config or environment
-    const sslEnabled =
-      config.ssl !== false && process.env.SUPABASE_DB_SSL !== "false";
+    const sslEnabled = config.ssl !== false && process.env.SUPABASE_DB_SSL !== 'false';
 
     if (sslEnabled) {
       // Use custom CA if available
       try {
-        const certPath = path.join(__dirname, "../../certs/prod-ca-2021.crt");
+        const certPath = path.join(__dirname, '../../certs/prod-ca-2021.crt');
         if (fs.existsSync(certPath)) {
           const ca = fs.readFileSync(certPath).toString();
           sslConfig = { ca, rejectUnauthorized: true };
-          console.log("🔐 Using custom SSL certificate");
+          console.log('🔐 Using custom SSL certificate');
         } else {
           // Fallback if cert not found
           sslConfig = { rejectUnauthorized: false };
-          console.log(
-            "🔐 Using SSL without custom certificate (rejectUnauthorized: false)"
-          );
+          console.log('🔐 Using SSL without custom certificate (rejectUnauthorized: false)');
         }
       } catch (e) {
         // Fallback if cert not found
         sslConfig = { rejectUnauthorized: false };
-        console.log(
-          "🔐 Using SSL without custom certificate (rejectUnauthorized: false)"
-        );
+        console.log('🔐 Using SSL without custom certificate (rejectUnauthorized: false)');
       }
     } else {
-      console.log("🔐 SSL disabled via configuration");
+      console.log('🔐 SSL disabled via configuration');
     }
 
     const dbConfig = {
@@ -59,27 +54,20 @@ class DatabaseUtils {
     };
 
     // Validate required credentials
-    if (
-      !dbConfig.host ||
-      !dbConfig.database ||
-      !dbConfig.user ||
-      !dbConfig.password
-    ) {
-      throw new Error(
-        "Database credentials are required. Please set SUPABASE_DB_HOST, SUPABASE_DB_NAME, SUPABASE_DB_USER, and SUPABASE_DB_PASSWORD in your .env file."
-      );
+    if (!dbConfig.host || !dbConfig.database || !dbConfig.user || !dbConfig.password) {
+      throw new Error('Database credentials are required. Please set SUPABASE_DB_HOST, SUPABASE_DB_NAME, SUPABASE_DB_USER, and SUPABASE_DB_PASSWORD in your .env file.');
     }
 
-    console.log("🔌 Attempting to connect to database...");
-    console.log("📍 Host:", dbConfig.host);
-    console.log("🚪 Port:", dbConfig.port);
-    console.log("🗄️  Database:", dbConfig.database);
-    console.log("👤 User:", dbConfig.user);
-    console.log("🔐 SSL:", sslConfig ? "Enabled" : "Disabled");
+    console.log('🔌 Attempting to connect to database...');
+    console.log('📍 Host:', dbConfig.host);
+    console.log('🚪 Port:', dbConfig.port);
+    console.log('🗄️  Database:', dbConfig.database);
+    console.log('👤 User:', dbConfig.user);
+    console.log('🔐 SSL:', sslConfig ? 'Enabled' : 'Disabled');
 
     this.client = new Client(dbConfig);
     await this.client.connect();
-    console.log("✅ Connected to database successfully");
+    console.log('✅ Connected to database successfully');
   }
 
   /**
@@ -90,14 +78,14 @@ class DatabaseUtils {
    */
   async query(query, params = []) {
     if (!this.client) {
-      throw new Error("Database not connected. Call connect() first.");
+      throw new Error('Database not connected. Call connect() first.');
     }
 
     try {
       const result = await this.client.query(query, params);
       return result;
     } catch (error) {
-      console.error("Database query error:", error);
+      console.error('Database query error:', error);
       throw error;
     }
   }
@@ -196,7 +184,7 @@ class DatabaseUtils {
         params.push(value);
         paramIndex++;
       }
-      query += ` WHERE ${conditions.join(" AND ")}`;
+      query += ` WHERE ${conditions.join(' AND ')}`;
     }
 
     const result = await this.query(query, params);
@@ -232,10 +220,7 @@ class DatabaseUtils {
 
     if (lead) {
       // Delete the lead
-      const result = await this.query(
-        "DELETE FROM leads WHERE email = $1 RETURNING *",
-        [email]
-      );
+      const result = await this.query('DELETE FROM leads WHERE email = $1 RETURNING *', [email]);
 
       console.log(`✅ Lead deleted:`, result.rows[0]);
       return { deleted: true, lead: result.rows[0] };
@@ -246,13 +231,91 @@ class DatabaseUtils {
   }
 
   /**
+   * Find customer by email
+   * @param {string} email - Customer email
+   * @returns {Promise<Object|null>} Customer data or null
+   */
+  async findCustomerByEmail(email) {
+    const query = `
+      SELECT id, first_name, last_name, email, company, position, phone, mobile, website, status, created_at, updated_at
+      FROM customers 
+      WHERE email = $1
+    `;
+
+    const result = await this.query(query, [email]);
+    return result.rows.length > 0 ? result.rows[0] : null;
+  }
+
+  /**
+   * Delete customer by email
+   * @param {string} email - Customer email
+   * @returns {Promise<Object>} Deletion result
+   */
+  async deleteCustomerByEmail(email) {
+    console.log(`🗑️  Deleting customer with email: ${email}`);
+
+    // First, find the customer to get its details
+    const customer = await this.findCustomerByEmail(email);
+
+    if (customer) {
+      // Delete the customer
+      const result = await this.query('DELETE FROM customers WHERE email = $1 RETURNING *', [email]);
+
+      console.log(`✅ Customer deleted:`, result.rows[0]);
+      return { deleted: true, customer: result.rows[0] };
+    } else {
+      console.log(`❌ No customer found to delete: ${email}`);
+      return { deleted: false, customer: null };
+    }
+  }
+
+  /**
+   * Find sale by invoice number
+   * @param {string} invoiceNumber - Sale invoice number
+   * @returns {Promise<Object|null>} Sale data or null
+   */
+  async findSaleByInvoiceNumber(invoiceNumber) {
+    const query = `
+      SELECT id, customer_id, amount, description, sale_date, payment_status, payment_method, invoice_number, organization_id, profile_id, created_at, updated_at
+      FROM sales 
+      WHERE invoice_number = $1
+    `;
+
+    const result = await this.query(query, [invoiceNumber]);
+    return result.rows.length > 0 ? result.rows[0] : null;
+  }
+
+  /**
+   * Delete sale by invoice number
+   * @param {string} invoiceNumber - Sale invoice number
+   * @returns {Promise<Object>} Deletion result
+   */
+  async deleteSaleByInvoiceNumber(invoiceNumber) {
+    console.log(`🗑️  Deleting sale with invoice number: ${invoiceNumber}`);
+
+    // First, find the sale to get its details
+    const sale = await this.findSaleByInvoiceNumber(invoiceNumber);
+
+    if (sale) {
+      // Delete the sale
+      const result = await this.query('DELETE FROM sales WHERE invoice_number = $1 RETURNING *', [invoiceNumber]);
+
+      console.log(`✅ Sale deleted:`, result.rows[0]);
+      return { deleted: true, sale: result.rows[0] };
+    } else {
+      console.log(`❌ No sale found to delete: ${invoiceNumber}`);
+      return { deleted: false, sale: null };
+    }
+  }
+
+  /**
    * Close database connection
    */
   async disconnect() {
     if (this.client) {
       await this.client.end();
       this.client = null;
-      console.log("✅ Database connection closed");
+      console.log('✅ Database connection closed');
     }
   }
 }
@@ -268,12 +331,12 @@ if (require.main === module) {
   (async () => {
     try {
       await dbUtils.connect();
-      const result = await dbUtils.query("SELECT * FROM organizations;");
-      console.log("Organizations:", result.rows);
+      const result = await dbUtils.query('SELECT * FROM organizations;');
+      console.log('Organizations:', result.rows);
       await dbUtils.disconnect();
       process.exit(0);
     } catch (err) {
-      console.error("Test DB connection failed:", err);
+      console.error('Test DB connection failed:', err);
       process.exit(1);
     }
   })();

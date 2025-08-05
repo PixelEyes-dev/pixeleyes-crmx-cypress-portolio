@@ -2,7 +2,7 @@
 
 import SideNavBar from '../../support/pageObjects/SideNavBar';
 import LeadsPage from '../../support/pageObjects/LeadsPage';
-import { generateLeadData, generateRandomParagraph, generateEmail } from '../../support/testDataGenerator';
+import { generateLeadData, generateCompanyDescription, generateEmail } from '../../support/testDataGenerator';
 import CustomersPage from '../../support/pageObjects/CustomersPage';
 
 describe('Generate Leads', () => {
@@ -79,7 +79,7 @@ describe('Generate Leads', () => {
     LeadsPage.addNewLeadBusinessQualificationTextBox().type(leadData.qualification.toString());
     LeadsPage.addNewLeadBusinessStatusSelect(leadData.status.toLowerCase());
     LeadsPage.addNewLeadBusinessEmailingStatusButton().click();
-    LeadsPage.addNewLeadBusinessDescriptionTextBox().type(generateRandomParagraph(4));
+    LeadsPage.addNewLeadBusinessDescriptionTextBox().type(generateCompanyDescription());
     LeadsPage.addNewLeadAddressInformationTab().click();
     LeadsPage.addNewLeadAddressStreetTextBox().type(leadData.street);
     LeadsPage.addNewLeadAddressCountrySelect(leadData.country);
@@ -157,7 +157,7 @@ describe('Generate Leads', () => {
           // Wait for the form to be fully ready by checking multiple elements
           LeadsPage.customerFirstNameTextBox().should('be.visible');
           LeadsPage.convertLeadToCustomerSaveButton().should('be.visible').and('be.enabled');
-          //Validate the address information tab is visible
+
           cy.get('#customer-tab-address').click();
           cy.get('#customer-input-street').should('have.value', leadData.street);
 

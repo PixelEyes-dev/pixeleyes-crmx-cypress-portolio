@@ -1,34 +1,31 @@
-const { defineConfig } = require("cypress");
-const path = require("path");
-const { createClient } = require("@supabase/supabase-js");
-const dbUtils = require("./cypress/support/dbUtils.js");
+const { defineConfig } = require('cypress');
+const path = require('path');
+const { createClient } = require('@supabase/supabase-js');
+const dbUtils = require('./cypress/support/dbUtils.js');
 
 // Explicitly load .env from the project root
-require("dotenv").config({ path: path.resolve(__dirname, ".env") });
+require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 
 module.exports = defineConfig({
   e2e: {
-    baseUrl: "https://www.crmx.mx", // Production environment
-    reporter: "cypress-mochawesome-reporter",
+    baseUrl: 'https://www.crmx.mx', // Production environment
+    reporter: 'cypress-mochawesome-reporter',
     reporterOptions: {
       charts: true,
-      reportPageTitle: "CRMx Test Results",
+      reportPageTitle: 'CRMx Test Results',
       embeddedScreenshots: true,
       inlineAssets: true,
       saveAllAttempts: false,
     },
     setupNodeEvents(on, config) {
       // Add cypress-mochawesome-reporter plugin
-      require("cypress-mochawesome-reporter/plugin")(on);
+      require('cypress-mochawesome-reporter/plugin')(on);
 
       // Add custom Supabase query task
-      on("task", {
+      on('task', {
         async querySupabase({ table, filter }) {
-          const supabase = createClient(
-            process.env.CYPRESS_SUPABASE_URL,
-            process.env.CYPRESS_SUPABASE_ANON_KEY
-          );
-          let query = supabase.from(table).select("*");
+          const supabase = createClient(process.env.CYPRESS_SUPABASE_URL, process.env.CYPRESS_SUPABASE_ANON_KEY);
+          let query = supabase.from(table).select('*');
           if (filter) {
             Object.entries(filter).forEach(([key, value]) => {
               query = query.eq(key, value);
@@ -40,21 +37,16 @@ module.exports = defineConfig({
         },
         async queryOrganizations() {
           await dbUtils.connect();
-          const result = await dbUtils.query("SELECT * FROM organizations;");
+          const result = await dbUtils.query('SELECT * FROM organizations;');
           await dbUtils.disconnect();
           return result.rows;
         },
         async queryProfileByEmail(email) {
-          console.log(
-            `🔌 Connecting to database to query profile for email: ${email}`
-          );
+          console.log(`🔌 Connecting to database to query profile for email: ${email}`);
           await dbUtils.connect();
           console.log(`🔍 Executing query for profile with email: ${email}`);
           const profile = await dbUtils.findProfileByEmail(email);
-          console.log(
-            `📊 Query result:`,
-            profile ? "Profile found" : "No profile found"
-          );
+          console.log(`📊 Query result:`, profile ? 'Profile found' : 'No profile found');
           await dbUtils.disconnect();
           console.log(`🔌 Database connection closed`);
           return profile;
@@ -65,25 +57,19 @@ module.exports = defineConfig({
 
           // First, delete from auth.users table
           console.log(`🔐 Deleting from auth.users table...`);
-          const authResult = await dbUtils.query(
-            "DELETE FROM auth.users WHERE email = $1 RETURNING id, email",
-            [email]
-          );
+          const authResult = await dbUtils.query('DELETE FROM auth.users WHERE email = $1 RETURNING id, email', [email]);
 
           // Then, delete from profiles table
           console.log(`👤 Deleting from profiles table...`);
-          const profileResult = await dbUtils.query(
-            "DELETE FROM profiles WHERE email = $1 RETURNING *",
-            [email]
-          );
+          const profileResult = await dbUtils.query('DELETE FROM profiles WHERE email = $1 RETURNING *', [email]);
 
           await dbUtils.disconnect();
 
           const authDeleted = authResult.rows.length > 0;
           const profileDeleted = profileResult.rows.length > 0;
 
-          console.log(`✅ Auth user deleted: ${authDeleted ? "Yes" : "No"}`);
-          console.log(`✅ Profile deleted: ${profileDeleted ? "Yes" : "No"}`);
+          console.log(`✅ Auth user deleted: ${authDeleted ? 'Yes' : 'No'}`);
+          console.log(`✅ Profile deleted: ${profileDeleted ? 'Yes' : 'No'}`);
 
           return {
             deleted: authDeleted || profileDeleted,
@@ -96,10 +82,7 @@ module.exports = defineConfig({
           await dbUtils.connect();
           const org = await dbUtils.findOrganizationByName(orgName);
           if (org) {
-            const result = await dbUtils.query(
-              "DELETE FROM organizations WHERE name = $1 RETURNING *",
-              [orgName]
-            );
+            const result = await dbUtils.query('DELETE FROM organizations WHERE name = $1 RETURNING *', [orgName]);
             console.log(`✅ Organization deleted:`, result.rows[0]);
             await dbUtils.disconnect();
             return { deleted: true, organization: result.rows[0] };
@@ -110,16 +93,11 @@ module.exports = defineConfig({
           }
         },
         async queryLeadByEmail(email) {
-          console.log(
-            `🔌 Connecting to database to query lead for email: ${email}`
-          );
+          console.log(`🔌 Connecting to database to query lead for email: ${email}`);
           await dbUtils.connect();
           console.log(`🔍 Executing query for lead with email: ${email}`);
           const lead = await dbUtils.findLeadByEmail(email);
-          console.log(
-            `📊 Query result:`,
-            lead ? "Lead found" : "No lead found"
-          );
+          console.log(`📊 Query result:`, lead ? 'Lead found' : 'No lead found');
           await dbUtils.disconnect();
           console.log(`🔌 Database connection closed`);
           return lead;
@@ -128,6 +106,40 @@ module.exports = defineConfig({
           console.log(`🗑️  Deleting lead with email: ${email}`);
           await dbUtils.connect();
           const result = await dbUtils.deleteLeadByEmail(email);
+          await dbUtils.disconnect();
+          return result;
+        },
+        async queryCustomerByEmail(email) {
+          console.log(`🔌 Connecting to database to query customer for email: ${email}`);
+          await dbUtils.connect();
+          console.log(`🔍 Executing query for customer with email: ${email}`);
+          const customer = await dbUtils.findCustomerByEmail(email);
+          console.log(`📊 Query result:`, customer ? 'Customer found' : 'No customer found');
+          await dbUtils.disconnect();
+          console.log(`🔌 Database connection closed`);
+          return customer;
+        },
+        async deleteCustomerByEmail(email) {
+          console.log(`🗑️  Deleting customer with email: ${email}`);
+          await dbUtils.connect();
+          const result = await dbUtils.deleteCustomerByEmail(email);
+          await dbUtils.disconnect();
+          return result;
+        },
+        async querySaleByInvoiceNumber(invoiceNumber) {
+          console.log(`🔌 Connecting to database to query sale for invoice number: ${invoiceNumber}`);
+          await dbUtils.connect();
+          console.log(`🔍 Executing query for sale with invoice number: ${invoiceNumber}`);
+          const sale = await dbUtils.findSaleByInvoiceNumber(invoiceNumber);
+          console.log(`📊 Query result:`, sale ? 'Sale found' : 'No sale found');
+          await dbUtils.disconnect();
+          console.log(`🔌 Database connection closed`);
+          return sale;
+        },
+        async deleteSaleByInvoiceNumber(invoiceNumber) {
+          console.log(`🗑️  Deleting sale with invoice number: ${invoiceNumber}`);
+          await dbUtils.connect();
+          const result = await dbUtils.deleteSaleByInvoiceNumber(invoiceNumber);
           await dbUtils.disconnect();
           return result;
         },
