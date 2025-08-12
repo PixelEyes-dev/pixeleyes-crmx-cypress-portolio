@@ -8,6 +8,9 @@ class SideNavBar {
   salesTab() {
     return cy.get('#side-nav-sales');
   }
+  tasksTab() {
+    return cy.get('#side-nav-tasks');
+  }
 }
 
 export default new SideNavBar();
