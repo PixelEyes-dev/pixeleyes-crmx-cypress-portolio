@@ -143,6 +143,23 @@ module.exports = defineConfig({
           await dbUtils.disconnect();
           return result;
         },
+        async queryTaskByTitle(title) {
+          console.log(`🔌 Connecting to database to query task for title: ${title}`);
+          await dbUtils.connect();
+          console.log(`🔍 Executing query for task with title: ${title}`);
+          const task = await dbUtils.findTaskByTitle(title);
+          console.log(`📊 Query result:`, task ? 'Task found' : 'No task found');
+          await dbUtils.disconnect();
+          console.log(`🔌 Database connection closed`);
+          return task;
+        },
+        async deleteTaskByTitle(title) {
+          console.log(`🗑️  Deleting task with title: ${title}`);
+          await dbUtils.connect();
+          const result = await dbUtils.deleteTaskByTitle(title);
+          await dbUtils.disconnect();
+          return result;
+        },
       });
       config.env = {
         ...config.env,
@@ -157,7 +174,7 @@ module.exports = defineConfig({
     videoCompression: 32,
     screenshotOnRunFailure: true,
     screenshotOnHeadlessFailure: true,
-    trashAssetsBeforeRuns: process.env.CI ? false : true, // Keep reports in CI, overwrite locally
+    trashAssetsBeforeRuns: true,
     // Better error reporting
     retries: {
       runMode: 1,

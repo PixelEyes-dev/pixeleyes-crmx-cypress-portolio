@@ -309,6 +309,45 @@ class DatabaseUtils {
   }
 
   /**
+   * Find task by title
+   * @param {string} title - Task title
+   * @returns {Promise<Object|null>} Task data or null
+   */
+  async findTaskByTitle(title) {
+    const query = `
+      SELECT id, title, description, creation_date, scheduled_date, execution_date, status, task_type, priority, lead_id, customer_id, created_at, updated_at, organization_id, profile_id
+      FROM tasks 
+      WHERE title = $1
+    `;
+
+    const result = await this.query(query, [title]);
+    return result.rows.length > 0 ? result.rows[0] : null;
+  }
+
+  /**
+   * Delete task by title
+   * @param {string} title - Task title
+   * @returns {Promise<Object>} Deletion result
+   */
+  async deleteTaskByTitle(title) {
+    console.log(`🗑️  Deleting task with title: ${title}`);
+
+    // First, find the task to get its details
+    const task = await this.findTaskByTitle(title);
+
+    if (task) {
+      // Delete the task
+      const result = await this.query('DELETE FROM tasks WHERE title = $1 RETURNING *', [title]);
+
+      console.log(`✅ Task deleted:`, result.rows[0]);
+      return { deleted: true, task: result.rows[0] };
+    } else {
+      console.log(`❌ No task found to delete: ${title}`);
+      return { deleted: false, task: null };
+    }
+  }
+
+  /**
    * Close database connection
    */
   async disconnect() {

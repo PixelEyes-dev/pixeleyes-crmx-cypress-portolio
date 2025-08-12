@@ -1175,7 +1175,28 @@ const paymentStatuses = ['Paid', 'Pending', 'Overdue'];
 
 const paymentMethods = ['Credit Card', 'Bank Transfer', 'Cash', 'PayPal', 'Other'];
 
-const taskTitles = ['Call Lead/Customer', 'Send Email', 'Send Follow-up Email', 'Visit Lead/Customer', 'Request Legal Agreement', 'Meeting', 'Generate Quote'];
+const taskTitles = [
+  'Follow up with customer regarding product demo feedback from last week',
+  'Schedule quarterly business review meeting with key account managers',
+  'Prepare detailed proposal for enterprise client expansion project',
+  'Coordinate technical team resources for customer implementation phase',
+  'Review and update customer account information in CRM system',
+  'Conduct product demonstration for interested prospects next Tuesday',
+  'Send follow-up email to leads who attended the webinar yesterday',
+  'Update task status and add notes from the client meeting notes',
+  'Coordinate with technical team for customer support request escalation',
+  'Prepare presentation materials for upcoming client meeting on Friday',
+  'Follow up on pending invoice payments from customers this month',
+  'Schedule a call to discuss contract renewal options for Q4',
+  'Update customer contact information and preferences in database',
+  'Prepare quarterly business review materials for key accounts',
+  'Coordinate logistics for the upcoming customer visit next week',
+  'Follow up on customer feedback and satisfaction survey results',
+  'Review and approve customer support ticket resolution workflow',
+  'Schedule product training session for new customer onboarding',
+  'Prepare monthly performance report for customer success metrics',
+  'Coordinate with sales team for customer expansion opportunities',
+];
 
 const taskTypes = ['Call', 'Email', 'Visit', 'Quote', 'Follow-up', 'Virtual Meeting', 'Meeting'];
 
@@ -1316,6 +1337,32 @@ export function generateSalesDescription() {
   ];
 
   return getRandomElement(salesDescriptions);
+}
+
+/**
+ * Generate a random task description (1 sentence)
+ * @returns {string} Random task description
+ */
+export function generateTaskDescription() {
+  const taskDescriptions = [
+    'Follow up with customer regarding their recent inquiry about product features.',
+    'Schedule a meeting with the sales team to discuss quarterly targets.',
+    'Prepare and send proposal documents to the potential client.',
+    'Review and update customer account information in the CRM system.',
+    'Conduct a product demonstration for interested prospects.',
+    'Send follow-up email to leads who attended the webinar.',
+    'Update task status and add notes from the client meeting.',
+    'Coordinate with the technical team for customer support request.',
+    'Prepare presentation materials for the upcoming client meeting.',
+    'Follow up on pending invoice payments from customers.',
+    'Schedule a call to discuss contract renewal options.',
+    'Update customer contact information and preferences.',
+    'Prepare quarterly business review materials for key accounts.',
+    'Coordinate logistics for the upcoming customer visit.',
+    'Follow up on customer feedback and satisfaction survey.',
+  ];
+
+  return getRandomElement(taskDescriptions);
 }
 
 /**
@@ -1690,7 +1737,7 @@ export function generateTaskData() {
     priority: getRandomElement(taskPriorities),
     scheduledDate: scheduledDate,
     executionDate: executionDate,
-    description: generateRandomParagraph(3),
+    description: generateTaskDescription(),
     assignedTo: generateFullName(),
     relatedTo: getRandomElement(['Customer', 'Lead', 'Sale', 'General']),
     notes: `Test task notes created on ${new Date().toISOString()}`,
@@ -1812,4 +1859,5 @@ export default {
   generateRandomParagraph,
   generateCompanyDescription,
   generateSalesDescription,
+  generateTaskDescription,
 };

@@ -65,7 +65,7 @@ jobs:
           browser: chrome
           record: false
           config: video=true,screenshotOnRunFailure=true
-          spec: cypress/e2e/sanity/homePageSanity.cy.js,cypress/e2e/authentication/userLogin.cy.js,cypress/e2e/onboarding/userOnboarding.cy.js,cypress/e2e/leads/createLeadandDeleteFromBE.cy.js,cypress/e2e/leads/editLeadandDeleteFromFE.cy.js,cypress/e2e/leads/createAndConvertLeadToCustomer.cy.js,cypress/e2e/customers/createCustomerandDeleteFromBE.cy.js,cypress/e2e/customers/editCustomerandDeleteFromFE.cy.js,cypress/e2e/sales/createSaleAndDeleteFromBE.cy.js
+          spec: cypress/e2e/sanity/homePageSanity.cy.js,cypress/e2e/authentication/userLogin.cy.js,cypress/e2e/onboarding/userOnboarding.cy.js,cypress/e2e/leads/createLeadandDeleteFromBE.cy.js,cypress/e2e/leads/editLeadandDeleteFromFE.cy.js,cypress/e2e/leads/createAndConvertLeadToCustomer.cy.js,cypress/e2e/customers/createCustomerandDeleteFromBE.cy.js,cypress/e2e/customers/editCustomerandDeleteFromFE.cy.js,cypress/e2e/sales/createSaleAndDeleteFromBE.cy.js,cypress/e2e/tasks/createTaskAndDeleteFromBE.cy.js,cypress/e2e/tasks/createTaskEditAndDeleteFromFE.cy.js
           wait-on: 'https://www.crmx.mx'
           wait-on-timeout: 120
 
