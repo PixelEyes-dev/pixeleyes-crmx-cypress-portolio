@@ -2,6 +2,9 @@ const { defineConfig } = require('cypress');
 const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
 const dbUtils = require('./cypress/support/dbUtils.js');
+const { addCucumberPreprocessorPlugin } = require('@badeball/cypress-cucumber-preprocessor');
+const browserify = require('@cypress/browserify-preprocessor');
+const { preprendTransformerToOptions } = require('@badeball/cypress-cucumber-preprocessor/browserify');
 
 // Explicitly load .env from the project root
 require('dotenv').config({ path: path.resolve(__dirname, '.env') });
@@ -9,7 +12,8 @@ require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 module.exports = defineConfig({
   e2e: {
     baseUrl: 'https://www.crmx.mx', // Production environment
-    reporter: 'cypress-mochawesome-reporter',
+    specPattern: 'cypress/e2e/**/*.{js,jsx,ts,tsx,feature}',
+    // reporter: 'cypress-mochawesome-reporter',
     reporterOptions: {
       charts: true,
       reportPageTitle: 'CRMx Test Results',
@@ -17,9 +21,14 @@ module.exports = defineConfig({
       inlineAssets: true,
       saveAllAttempts: false,
     },
-    setupNodeEvents(on, config) {
+    async setupNodeEvents(on, config) {
+      // This is required for the preprocessor to be able to generate JSON reports after each run, and more.
+      await addCucumberPreprocessorPlugin(on, config);
+
+      on('file:preprocessor', browserify(preprendTransformerToOptions(config, browserify.defaultOptions)));
+
       // Add cypress-mochawesome-reporter plugin
-      require('cypress-mochawesome-reporter/plugin')(on);
+      // require('cypress-mochawesome-reporter/plugin')(on);
 
       // Add custom Supabase query task
       on('task', {
