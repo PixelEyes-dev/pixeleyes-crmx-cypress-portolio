@@ -13,7 +13,7 @@ module.exports = defineConfig({
   e2e: {
     baseUrl: 'https://www.crmx.mx', // Production environment
     specPattern: 'cypress/e2e/**/*.{js,jsx,ts,tsx,feature}',
-    // reporter: 'cypress-mochawesome-reporter',
+    reporter: 'cypress-mochawesome-reporter',
     reporterOptions: {
       charts: true,
       reportPageTitle: 'CRMx Test Results',
@@ -28,7 +28,7 @@ module.exports = defineConfig({
       on('file:preprocessor', browserify(preprendTransformerToOptions(config, browserify.defaultOptions)));
 
       // Add cypress-mochawesome-reporter plugin
-      // require('cypress-mochawesome-reporter/plugin')(on);
+      require('cypress-mochawesome-reporter/plugin')(on);
 
       // Add custom Supabase query task
       on('task', {
