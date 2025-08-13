@@ -1,6 +1,6 @@
 import { Given, When, Then } from '@badeball/cypress-cucumber-preprocessor';
-import SideNavBar from '../pageObjects/SideNavBar';
-import TasksPage from '../pageObjects/TasksPage';
+import SideNavBar from '../../pageObjects/SideNavBar';
+import TasksPage from '../../pageObjects/TasksPage';
 
 // Common step definitions that can be shared across multiple features
 Given('I am logged into the application', () => {

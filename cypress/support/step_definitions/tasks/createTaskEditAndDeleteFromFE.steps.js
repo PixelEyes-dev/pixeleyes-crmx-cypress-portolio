@@ -1,7 +1,7 @@
 import { Given, When, Then } from '@badeball/cypress-cucumber-preprocessor';
-import SideNavBar from '../pageObjects/SideNavBar';
-import TasksPage from '../pageObjects/TasksPage';
-import { generateTaskData, generateTaskDescription } from '../testDataGenerator';
+import SideNavBar from '../../pageObjects/SideNavBar';
+import TasksPage from '../../pageObjects/TasksPage';
+import { generateTaskData, generateTaskDescription } from '../../testDataGenerator';
 
 // Store the generated task data and customer name for use across steps
 let taskData;
