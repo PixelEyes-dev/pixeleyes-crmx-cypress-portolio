@@ -472,8 +472,6 @@ const lastNames = [
   'Roman',
   'Dickerson',
   'Hodge',
-  'Acosta',
-  'Flynn',
 ];
 
 const companySuffixes = [
@@ -1110,11 +1108,9 @@ const countries = ['MX', 'US', 'CA', 'BR'];
 
 const statesByCountry = {
   MX: [
-    'AGU', // Aguascalientes
     'BCN', // Baja California
     'CHH', // Chihuahua
     'JAL', // Jalisco
-    'NLE', // Nuevo León
   ],
   US: [
     'CA', // California
@@ -1143,11 +1139,9 @@ const statesByCountry = {
 // Using state ISO codes as keys to match form expectations
 const citiesByState = {
   // Mexico cities (5 per state)
-  AGU: ['Aguascalientes', 'Calvillo', 'Jesús María', 'Rincón de Romos', 'San José de Gracia'],
   BCN: ['Tijuana', 'Mexicali', 'Ensenada', 'La Paz', 'San Felipe'],
-  CHH: ['Chihuahua', 'Ciudad Juárez', 'Delicias', 'Cuauhtémoc', 'Nuevo Casas Grandes'],
-  JAL: ['Guadalajara', 'Zapopan', 'Tlaquepaque', 'Tonalá', 'El Salto'],
-  NLE: ['Monterrey', 'Guadalupe', 'San Nicolás de los Garza', 'Santa Catarina', 'San Pedro Garza García'],
+  CHH: ['Chihuahua', 'Ciudad Juarez', 'Delicias', 'Cuauhtemoc', 'Nuevo Casas Grandes'],
+  JAL: ['Guadalajara', 'Zapopan', 'Tlaquepaque', 'Tonala', 'El Salto'],
 
   // US cities (5 per state)
   CA: ['Los Angeles', 'San Francisco', 'San Diego', 'San Jose', 'Sacramento'],
@@ -1160,15 +1154,15 @@ const citiesByState = {
   AB: ['Calgary', 'Edmonton', 'Red Deer', 'Lethbridge', 'Medicine Hat'],
   BC: ['Vancouver', 'Surrey', 'Burnaby', 'Richmond', 'Kelowna'],
   ON: ['Toronto', 'Ottawa', 'Mississauga', 'Brampton', 'Hamilton'],
-  QC: ['Montreal', 'Quebec City', 'Laval', 'Gatineau', 'Longueuil'],
+  QC: ['Quebec City', 'Laval', 'Gatineau', 'Longueuil', 'Sherbrooke'],
   SK: ['Saskatoon', 'Regina', 'Prince Albert', 'Moose Jaw', 'Swift Current'],
 
   // Brazil cities (5 per state)
-  SP: ['São Paulo', 'Guarulhos', 'Campinas', 'São Bernardo do Campo', 'Santo André'],
-  RJ: ['Rio de Janeiro', 'São Gonçalo', 'Duque de Caxias', 'Nova Iguaçu', 'Niterói'],
-  MG: ['Belo Horizonte', 'Uberlândia', 'Contagem', 'Juiz de Fora', 'Betim'],
-  BA: ['Salvador', 'Feira de Santana', 'Vitória da Conquista', 'Camaçari', 'Itabuna'],
-  PR: ['Curitiba', 'Londrina', 'Maringá', 'Ponta Grossa', 'Cascavel'],
+  SP: ['Sao Paulo', 'Guarulhos', 'Campinas', 'Sao Bernardo do Campo', 'Santo Andre'],
+  RJ: ['Rio de Janeiro', 'Sao Goncalo', 'Duque de Caxias', 'Nova Iguacu', 'Niteroi'],
+  MG: ['Belo Horizonte', 'Uberlandia', 'Contagem', 'Juiz de Fora', 'Betim'],
+  BA: ['Salvador', 'Feira de Santana', 'Vitoria da Conquista', 'Camacari', 'Itabuna'],
+  PR: ['Curitiba', 'Londrina', 'Maringa', 'Ponta Grossa', 'Cascavel'],
 };
 
 const paymentStatuses = ['Paid', 'Pending', 'Overdue'];
