@@ -170,10 +170,17 @@ module.exports = defineConfig({
           return result;
         },
       });
+      // Ensure environment variables are properly loaded
       config.env = {
         ...config.env,
+        SUPABASE_URL: process.env.CYPRESS_SUPABASE_URL,
+        SUPABASE_ANON_KEY: process.env.CYPRESS_SUPABASE_ANON_KEY,
+        USER_EMAIL: process.env.CYPRESS_USER_EMAIL,
+        USER_PASSWORD: process.env.CYPRESS_USER_PASSWORD,
+        // Also include all other process.env variables
         ...process.env,
       };
+
       return config;
     },
     viewportWidth: 1280,

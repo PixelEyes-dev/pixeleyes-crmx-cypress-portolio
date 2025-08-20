@@ -472,8 +472,6 @@ const lastNames = [
   'Roman',
   'Dickerson',
   'Hodge',
-  'Acosta',
-  'Flynn',
 ];
 
 const companySuffixes = [
@@ -1110,11 +1108,11 @@ const countries = ['MX', 'US', 'CA', 'BR'];
 
 const statesByCountry = {
   MX: [
-    'AGU', // Aguascalientes
     'BCN', // Baja California
     'CHH', // Chihuahua
     'JAL', // Jalisco
-    'NLE', // Nuevo León
+    'SON', // Sonora
+    'OAX', // Oaxaca
   ],
   US: [
     'CA', // California
@@ -1143,32 +1141,32 @@ const statesByCountry = {
 // Using state ISO codes as keys to match form expectations
 const citiesByState = {
   // Mexico cities (5 per state)
-  AGU: ['Aguascalientes', 'Calvillo', 'Jesús María', 'Rincón de Romos', 'San José de Gracia'],
-  BCN: ['Tijuana', 'Mexicali', 'Ensenada', 'La Paz', 'San Felipe'],
-  CHH: ['Chihuahua', 'Ciudad Juárez', 'Delicias', 'Cuauhtémoc', 'Nuevo Casas Grandes'],
-  JAL: ['Guadalajara', 'Zapopan', 'Tlaquepaque', 'Tonalá', 'El Salto'],
-  NLE: ['Monterrey', 'Guadalupe', 'San Nicolás de los Garza', 'Santa Catarina', 'San Pedro Garza García'],
+  BCN: ['Tecate', 'Tijuana', 'Delta', 'Tecolots', 'Ensenada'],
+  CHH: ['Aldama', 'Allende', 'Chihuahua', 'Delicias', 'Matamoros'],
+  JAL: ['Guadalajara', 'Zapopan', 'Tlaquepaque', 'Magdalena', 'Tequila'],
+  SON: ['Aconchi', 'Carbo', 'Imuris', 'Rosales', 'Rosario'],
+  OAX: ['Corralero', 'Donaji', 'Mancuernas', 'Progreso', 'Taniche'],
 
   // US cities (5 per state)
-  CA: ['Los Angeles', 'San Francisco', 'San Diego', 'San Jose', 'Sacramento'],
+  CA: ['Acton', 'Alamo', 'Corona', 'Covina', 'Crest'],
   FL: ['Jacksonville', 'Miami', 'Tampa', 'Orlando', 'Fort Lauderdale'],
-  NY: ['New York City', 'Buffalo', 'Rochester', 'Yonkers', 'Syracuse'],
-  TX: ['Houston', 'San Antonio', 'Dallas', 'Austin', 'Fort Worth'],
-  WA: ['Seattle', 'Spokane', 'Tacoma', 'Vancouver', 'Bellevue'],
+  NY: ['Alden', 'Buffalo', 'Rochester', 'Yonkers', 'Syracuse'],
+  TX: ['Houston', 'Alto', 'Dallas', 'Austin', 'Fort Worth'],
+  WA: ['Seattle', 'Spanaway', 'Tacoma', 'Vancouver', 'Bellevue'],
 
   // Canada cities (5 per state)
-  AB: ['Calgary', 'Edmonton', 'Red Deer', 'Lethbridge', 'Medicine Hat'],
+  AB: ['Calgary', 'Edmonton', 'Raymond', 'Lethbridge', 'Leduc'],
   BC: ['Vancouver', 'Surrey', 'Burnaby', 'Richmond', 'Kelowna'],
   ON: ['Toronto', 'Ottawa', 'Mississauga', 'Brampton', 'Hamilton'],
-  QC: ['Montreal', 'Quebec City', 'Laval', 'Gatineau', 'Longueuil'],
-  SK: ['Saskatoon', 'Regina', 'Prince Albert', 'Moose Jaw', 'Swift Current'],
+  QC: ['Alma', 'Laval', 'Gatineau', 'Longueuil', 'Sherbrooke'],
+  SK: ['Saskatoon', 'Regina', 'Estevan', 'Kamsack', 'Rosethern'],
 
-  // Brazil cities (5 per state)
-  SP: ['São Paulo', 'Guarulhos', 'Campinas', 'São Bernardo do Campo', 'Santo André'],
-  RJ: ['Rio de Janeiro', 'São Gonçalo', 'Duque de Caxias', 'Nova Iguaçu', 'Niterói'],
-  MG: ['Belo Horizonte', 'Uberlândia', 'Contagem', 'Juiz de Fora', 'Betim'],
-  BA: ['Salvador', 'Feira de Santana', 'Vitória da Conquista', 'Camaçari', 'Itabuna'],
-  PR: ['Curitiba', 'Londrina', 'Maringá', 'Ponta Grossa', 'Cascavel'],
+  // Brazil cities (using exact names from frontend dropdown)
+  SP: ['Adamantina', 'Adolfo', 'Agudos', 'Alambari', 'Guapiara'],
+  RJ: ['Areal', 'Cambuci', 'Italva', 'Japeri', 'Mendes'],
+  MG: ['Acaiaca', 'Aguanil', 'Bugre', 'Buritis', 'Coroaci'],
+  BA: ['Salvador', 'Adustina', 'Antas', 'Ichu', 'Muritiba'],
+  PR: ['Araruna', 'Goioxim', 'Guapirama', 'Floresta', 'Irati'],
 };
 
 const paymentStatuses = ['Paid', 'Pending', 'Overdue'];
