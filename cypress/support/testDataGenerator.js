@@ -1111,6 +1111,8 @@ const statesByCountry = {
     'BCN', // Baja California
     'CHH', // Chihuahua
     'JAL', // Jalisco
+    'SON', // Sonora
+    'OAX', // Oaxaca
   ],
   US: [
     'CA', // California
@@ -1139,30 +1141,32 @@ const statesByCountry = {
 // Using state ISO codes as keys to match form expectations
 const citiesByState = {
   // Mexico cities (5 per state)
-  BCN: ['Tijuana', 'Mexicali', 'Ensenada', 'La Paz', 'San Felipe'],
-  CHH: ['Chihuahua', 'Ciudad Juarez', 'Delicias', 'Cuauhtemoc', 'Nuevo Casas Grandes'],
-  JAL: ['Guadalajara', 'Zapopan', 'Tlaquepaque', 'Tonala', 'El Salto'],
+  BCN: ['Tecate', 'Tijuana', 'Delta', 'Tecolots', 'Ensenada'],
+  CHH: ['Aldama', 'Allende', 'Chihuahua', 'Delicias', 'Matamoros'],
+  JAL: ['Guadalajara', 'Zapopan', 'Tlaquepaque', 'Magdalena', 'Tequila'],
+  SON: ['Aconchi', 'Carbo', 'Imuris', 'Rosales', 'Rosario'],
+  OAX: ['Corralero', 'Donaji', 'Mancuernas', 'Progreso', 'Taniche'],
 
   // US cities (5 per state)
-  CA: ['Los Angeles', 'San Francisco', 'San Diego', 'San Jose', 'Sacramento'],
+  CA: ['Acton', 'Alamo', 'Corona', 'Covina', 'Crest'],
   FL: ['Jacksonville', 'Miami', 'Tampa', 'Orlando', 'Fort Lauderdale'],
-  NY: ['New York City', 'Buffalo', 'Rochester', 'Yonkers', 'Syracuse'],
-  TX: ['Houston', 'San Antonio', 'Dallas', 'Austin', 'Fort Worth'],
-  WA: ['Seattle', 'Spokane', 'Tacoma', 'Vancouver', 'Bellevue'],
+  NY: ['Alden', 'Buffalo', 'Rochester', 'Yonkers', 'Syracuse'],
+  TX: ['Houston', 'Alto', 'Dallas', 'Austin', 'Fort Worth'],
+  WA: ['Seattle', 'Spanaway', 'Tacoma', 'Vancouver', 'Bellevue'],
 
   // Canada cities (5 per state)
-  AB: ['Calgary', 'Edmonton', 'Red Deer', 'Lethbridge', 'Medicine Hat'],
+  AB: ['Calgary', 'Edmonton', 'Raymond', 'Lethbridge', 'Leduc'],
   BC: ['Vancouver', 'Surrey', 'Burnaby', 'Richmond', 'Kelowna'],
   ON: ['Toronto', 'Ottawa', 'Mississauga', 'Brampton', 'Hamilton'],
-  QC: ['Quebec City', 'Laval', 'Gatineau', 'Longueuil', 'Sherbrooke'],
-  SK: ['Saskatoon', 'Regina', 'Prince Albert', 'Moose Jaw', 'Swift Current'],
+  QC: ['Alma', 'Laval', 'Gatineau', 'Longueuil', 'Sherbrooke'],
+  SK: ['Saskatoon', 'Regina', 'Estevan', 'Kamsack', 'Rosethern'],
 
-  // Brazil cities (5 per state)
-  SP: ['Sao Paulo', 'Guarulhos', 'Campinas', 'Sao Bernardo do Campo', 'Santo Andre'],
-  RJ: ['Rio de Janeiro', 'Sao Goncalo', 'Duque de Caxias', 'Nova Iguacu', 'Niteroi'],
-  MG: ['Belo Horizonte', 'Uberlandia', 'Contagem', 'Juiz de Fora', 'Betim'],
-  BA: ['Salvador', 'Feira de Santana', 'Vitoria da Conquista', 'Camacari', 'Itabuna'],
-  PR: ['Curitiba', 'Londrina', 'Maringa', 'Ponta Grossa', 'Cascavel'],
+  // Brazil cities (using exact names from frontend dropdown)
+  SP: ['Adamantina', 'Adolfo', 'Agudos', 'Alambari', 'Guapiara'],
+  RJ: ['Areal', 'Cambuci', 'Italva', 'Japeri', 'Mendes'],
+  MG: ['Acaiaca', 'Aguanil', 'Bugre', 'Buritis', 'Coroaci'],
+  BA: ['Salvador', 'Adustina', 'Antas', 'Ichu', 'Muritiba'],
+  PR: ['Araruna', 'Goioxim', 'Guapirama', 'Floresta', 'Irati'],
 };
 
 const paymentStatuses = ['Paid', 'Pending', 'Overdue'];
