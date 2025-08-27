@@ -29,7 +29,6 @@ module.exports = defineConfig({
 
       // Add cypress-mochawesome-reporter plugin
       require('cypress-mochawesome-reporter/plugin')(on);
-
       // Add custom Supabase query task
       on('task', {
         async querySupabase({ table, filter }) {
@@ -177,6 +176,10 @@ module.exports = defineConfig({
         SUPABASE_ANON_KEY: process.env.CYPRESS_SUPABASE_ANON_KEY,
         USER_EMAIL: process.env.CYPRESS_USER_EMAIL,
         USER_PASSWORD: process.env.CYPRESS_USER_PASSWORD,
+        USER1_ID: process.env.CYPRESS_USER1_ID,
+        ORGANIZATION1_ID: process.env.CYPRESS_ORGANIZATION1_ID,
+        USER2_EMAIL: process.env.CYPRESS_USER2_EMAIL,
+        USER2_PASSWORD: process.env.CYPRESS_USER2_PASSWORD,
         // Also include all other process.env variables
         ...process.env,
       };

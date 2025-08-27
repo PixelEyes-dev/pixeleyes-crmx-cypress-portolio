@@ -5,7 +5,8 @@ on:
     branches: [main, develop]
     paths:
       - 'cypress/e2e/api/**'
-      - 'cypress/support/**'
+      - 'cypress/e2e/leads/**'
+      - 'src/services/api/**'
       - 'cypress.config.js'
       - '.github/workflows/api-tests.yml'
   pull_request:
@@ -27,6 +28,17 @@ jobs:
       matrix:
         node-version: [18]
 
+    env:
+      CYPRESS_SUPABASE_URL: ${{ secrets.CYPRESS_SUPABASE_URL }}
+      CYPRESS_SUPABASE_ANON_KEY: ${{ secrets.CYPRESS_SUPABASE_ANON_KEY }}
+      CYPRESS_USER_EMAIL: ${{ secrets.CYPRESS_USER_EMAIL }}
+      CYPRESS_USER_PASSWORD: ${{ secrets.CYPRESS_USER_PASSWORD }}
+      CYPRESS_USER2_EMAIL: ${{ secrets.CYPRESS_USER2_EMAIL }}
+      CYPRESS_USER2_PASSWORD: ${{ secrets.CYPRESS_USER2_PASSWORD }}
+      CYPRESS_USER1_ID: ${{ secrets.CYPRESS_USER1_ID }}
+      CYPRESS_ORGANIZATION1_ID: ${{ secrets.CYPRESS_ORGANIZATION1_ID }}
+      CI: true
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -43,15 +55,79 @@ jobs:
       - name: Verify Cypress installation
         run: npx cypress verify
 
-      - name: Run API Tests
-        id: cypress
-        run: npx cypress run --spec "cypress/e2e/api/**/*.cy.js" --headless --reporter json --reporter-options outputPath=cypress/results/results.json
-        env:
-          CYPRESS_SUPABASE_URL: ${{ secrets.CYPRESS_SUPABASE_URL }}
-          CYPRESS_SUPABASE_ANON_KEY: ${{ secrets.CYPRESS_SUPABASE_ANON_KEY }}
-          CYPRESS_USER_EMAIL: ${{ secrets.CYPRESS_USER_EMAIL }}
-          CYPRESS_USER_PASSWORD: ${{ secrets.CYPRESS_USER_PASSWORD }}
-          CI: true
+      - name: Create results directory
+        run: mkdir -p cypress/results
+
+      - name: List API test files
+        run: |
+          echo "🔍 API Test files to be executed:"
+          find cypress/e2e/api -name "*.cy.js" -type f | sort
+          echo "📊 Total API test files: $(find cypress/e2e/api -name "*.cy.js" -type f | wc -l)"
+          echo ""
+          echo "🧪 CRUD Tests (Sequential execution order):"
+          echo "  1️⃣ 01-apiCreateLead.cy.js (Create + Cleanup)"
+          echo "  2️⃣ 02-apiReadLead.cy.js (Read preserved lead)"
+          echo "  3️⃣ 03-apiUpdateLead.cy.js (Update same lead)"
+          echo "  4️⃣ 04-apiDeleteLead.cy.js (Delete same lead)"
+          echo ""
+          echo "🔗 Other API Tests (Independent execution):"
+          find cypress/e2e/api -name "*.cy.js" -type f ! -name "01-apiCreateLead.cy.js" ! -name "02-apiReadLead.cy.js" ! -name "03-apiUpdateLead.cy.js" ! -name "04-apiDeleteLead.cy.js" | sort || echo "  No other API tests found"
+
+      - name: Debug Environment Variables
+        run: |
+          echo "🔍 Environment variables check:"
+          echo "USER1_ID: '$CYPRESS_USER1_ID'"
+          echo "ORGANIZATION1_ID: '$CYPRESS_ORGANIZATION1_ID'"
+          echo "USER_EMAIL: '$CYPRESS_USER_EMAIL'"
+          echo "SUPABASE_URL: '$CYPRESS_SUPABASE_URL'"
+          echo "SUPABASE_ANON_KEY: '$CYPRESS_SUPABASE_ANON_KEY'"
+          echo ""
+          echo "📋 Checking if variables are empty:"
+          if [ -z "$CYPRESS_USER1_ID" ]; then echo "❌ USER1_ID is empty"; else echo "✅ USER1_ID has value"; fi
+          if [ -z "$CYPRESS_ORGANIZATION1_ID" ]; then echo "❌ ORGANIZATION1_ID is empty"; else echo "✅ ORGANIZATION1_ID has value"; fi
+          if [ -z "$CYPRESS_USER_EMAIL" ]; then echo "❌ USER_EMAIL is empty"; else echo "✅ USER_EMAIL has value"; fi
+          if [ -z "$CYPRESS_SUPABASE_URL" ]; then echo "❌ SUPABASE_URL is empty"; else echo "✅ SUPABASE_URL has value"; fi
+          echo ""
+          echo "🔍 Checking GitHub secrets availability:"
+          echo "CYPRESS_USER1_ID secret exists: ${{ secrets.CYPRESS_USER1_ID != '' && 'YES' || 'NO' }}"
+          echo "CYPRESS_ORGANIZATION1_ID secret exists: ${{ secrets.CYPRESS_ORGANIZATION1_ID != '' && 'YES' || 'NO' }}"
+          echo ""
+          echo "🔍 Checking environment variable lengths:"
+          echo "USER1_ID length: ${#CYPRESS_USER1_ID}"
+          echo "ORGANIZATION1_ID length: ${#CYPRESS_ORGANIZATION1_ID}"
+          echo "USER_EMAIL length: ${#CYPRESS_USER_EMAIL}"
+          echo "SUPABASE_URL length: ${#CYPRESS_SUPABASE_URL}"
+          echo ""
+          echo "🔍 Checking if variables contain 'undefined':"
+          if [[ "$CYPRESS_USER1_ID" == *"undefined"* ]]; then echo "❌ USER1_ID contains 'undefined'"; else echo "✅ USER1_ID does not contain 'undefined'"; fi
+          if [[ "$CYPRESS_ORGANIZATION1_ID" == *"undefined"* ]]; then echo "❌ ORGANIZATION1_ID contains 'undefined'"; else echo "✅ ORGANIZATION1_ID does not contain 'undefined'"; fi
+          echo ""
+          echo "🔍 CRITICAL CHECK: If any required variables are empty, tests will fail!"
+          if [ -z "$CYPRESS_USER1_ID" ] || [ -z "$CYPRESS_ORGANIZATION1_ID" ]; then
+            echo "🚨 CRITICAL ERROR: Required environment variables are missing!"
+            echo "🚨 Please check that these secrets exist in your GitHub repository:"
+            echo "🚨 - CYPRESS_USER1_ID"
+            echo "🚨 - CYPRESS_ORGANIZATION1_ID"
+            echo ""
+            echo "🔍 Troubleshooting:"
+            echo "1. Verify secrets exist in GitHub repository settings"
+            echo "2. Check secret names match exactly (case-sensitive)"
+            echo "3. Ensure secrets have actual values (not empty strings)"
+            exit 1
+          else
+            echo "✅ All required environment variables are present"
+            echo "✅ USER1_ID: $CYPRESS_USER1_ID"
+            echo "✅ ORGANIZATION1_ID: $CYPRESS_ORGANIZATION1_ID"
+          fi
+
+      - name: Run CRUD API Tests (Sequential)
+        id: cypress-crud
+        run: npx cypress run --spec "cypress/e2e/api/leads/01-apiCreateLead.cy.js,cypress/e2e/api/leads/02-apiReadLead.cy.js,cypress/e2e/api/leads/03-apiUpdateLead.cy.js,cypress/e2e/api/leads/04-apiDeleteLead.cy.js" --headless --reporter json --reporter-options outputPath=cypress/results/crud-results.json
+
+      - name: Run Other API Tests
+        id: cypress-other
+        if: always()
+        run: npx cypress run --spec "cypress/e2e/api/**/!(01-apiCreateLead|02-apiReadLead|03-apiUpdateLead|04-apiDeleteLead).cy.js" --headless --reporter json --reporter-options outputPath=cypress/results/other-results.json
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
@@ -88,11 +164,14 @@ jobs:
             const fs = require('fs');
             const path = require('path');
 
-            const testOutcome = '${{ steps.cypress.outcome }}';
-            const testStatus = testOutcome === 'success' ? '✅ Passed' : '❌ Failed';
-            let messageBody = `**API Tests Status:** ${testStatus}\n**Run Number:** #${context.runNumber}\n**Workflow:** API Tests`;
+            const crudOutcome = '${{ steps.cypress-crud.outcome }}';
+            const otherOutcome = '${{ steps.cypress-other.outcome }}';
+            const crudStatus = crudOutcome === 'success' ? '✅ Passed' : '❌ Failed';
+            const otherStatus = otherOutcome === 'success' ? '✅ Passed' : '❌ Failed';
 
-            if (testOutcome === 'failure') {
+            let messageBody = `**CRUD API Tests (Sequential):** ${crudStatus}\n**Other API Tests:** ${otherStatus}\n**Run Number:** #${context.runNumber}\n**Workflow:** API Tests`;
+
+            if (crudOutcome === 'failure' || otherOutcome === 'failure') {
               messageBody += '\n\n🚨 **API Tests Failed** - Please check the test results below.';
               
               const screenshotsPath = 'cypress/screenshots';
@@ -111,16 +190,24 @@ jobs:
                 }
               }
               
-              const resultsPath = 'cypress/results/results.json';
-              if (fs.existsSync(resultsPath)) {
+              // Parse CRUD test results
+              const crudResultsPath = 'cypress/results/crud-results.json';
+              const otherResultsPath = 'cypress/results/other-results.json';
+              
+              let totalTests = 0, totalPassed = 0, totalFailed = 0, totalSkipped = 0;
+              
+              if (fs.existsSync(crudResultsPath)) {
                 try {
-                  const results = JSON.parse(fs.readFileSync(resultsPath, 'utf8'));
-                  if (results.runs && results.runs.length > 0) {
-                    const run = results.runs[0];
-                    messageBody += `\n\n📊 **Test Summary:**\n- **Total Tests:** ${run.stats.tests}\n- **Passed:** ${run.stats.passes}\n- **Failed:** ${run.stats.failures}\n- **Skipped:** ${run.stats.skipped}`;
+                  const crudResults = JSON.parse(fs.readFileSync(crudResultsPath, 'utf8'));
+                  if (crudResults.runs && crudResults.runs.length > 0) {
+                    const run = crudResults.runs[0];
+                    totalTests += run.stats.tests;
+                    totalPassed += run.stats.passes;
+                    totalFailed += run.stats.failures;
+                    totalSkipped += run.stats.skipped;
                     
                     if (run.stats.failures > 0) {
-                      messageBody += '\n\n❌ **Failed Tests:**';
+                      messageBody += '\n\n❌ **Failed CRUD Tests (Sequential):**';
                       run.tests.forEach(test => {
                         if (test.state === 'failed') {
                           messageBody += `\n- \`${test.title.join(' > ')}\` - ${test.error?.message || 'Unknown error'}`;
@@ -129,8 +216,36 @@ jobs:
                     }
                   }
                 } catch (e) {
-                  messageBody += '\n\n⚠️ Could not parse test results file.';
+                  messageBody += '\n\n⚠️ Could not parse CRUD test results file.';
                 }
+              }
+              
+              if (fs.existsSync(otherResultsPath)) {
+                try {
+                  const otherResults = JSON.parse(fs.readFileSync(otherResultsPath, 'utf8'));
+                  if (otherResults.runs && otherResults.runs.length > 0) {
+                    const run = otherResults.runs[0];
+                    totalTests += run.stats.tests;
+                    totalPassed += run.stats.passes;
+                    totalFailed += run.stats.failures;
+                    totalSkipped += run.stats.skipped;
+                    
+                    if (run.stats.failures > 0) {
+                      messageBody += '\n\n❌ **Failed Other API Tests:**';
+                      run.tests.forEach(test => {
+                        if (test.state === 'failed') {
+                          messageBody += `\n- \`${test.title.join(' > ')}\` - ${test.error?.message || 'Unknown error'}`;
+                        }
+                      });
+                    }
+                  }
+                } catch (e) {
+                  messageBody += '\n\n⚠️ Could not parse other test results file.';
+                }
+              }
+              
+              if (totalTests > 0) {
+                messageBody += `\n\n📊 **Combined Test Summary:**\n- **Total Tests:** ${totalTests}\n- **Passed:** ${totalPassed}\n- **Failed:** ${totalFailed}\n- **Skipped:** ${totalSkipped}`;
               }
               
               const artifactUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
@@ -149,5 +264,5 @@ jobs:
             });
 
       - name: Fail workflow if tests failed
-        if: steps.cypress.outcome == 'failure'
+        if: steps.cypress-crud.outcome == 'failure' || steps.cypress-other.outcome == 'failure'
         run: exit 1

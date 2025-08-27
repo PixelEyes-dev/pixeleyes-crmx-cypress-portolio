@@ -1,0 +1,42 @@
+{
+  "validLead": {
+    "first_name": "Bobby",
+    "last_name": "Doe",
+    "email": "bobby@example.com",
+    "secondary_email": "bobby.secondary@example.com",
+    "phone": "555-1234",
+    "mobile": "555-5678",
+    "company": "Test Company",
+    "position": "Manager",
+    "website": "https://testcompany.com",
+    "skype_id": "bobby.doe.skype",
+    "source": "website",
+    "sector": "Technology",
+    "status": "New",
+    "qualification": 8.5,
+    "annual_revenue": 1000000,
+    "employees_count": 50,
+    "description": "A test company for API testing",
+    "street": "123 Test Street",
+    "city": "Test City",
+    "state_province": "CA",
+    "country": "US",
+    "postal_code": "12345",
+    "phone_country_code": "+1",
+    "mobile_country_code": "+1",
+    "x": "bobby_doe_x",
+    "instagram": "bobby.doe.insta",
+    "facebook": "bobby.doe.fb",
+    "tiktok": "bobby_doe_tiktok"
+  },
+  "invalidLead": {
+    "first_name": "",
+    "email": "invalid-email",
+    "phone": "not-a-phone"
+  },
+  "minimalLead": {
+    "first_name": "Minimal",
+    "organization_id": "{{ORGANIZATION1_ID}}",
+    "owner_id": "{{USER1_ID}}"
+  }
+}

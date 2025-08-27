@@ -1198,7 +1198,7 @@ const taskTitles = [
 
 const taskTypes = ['Call', 'Email', 'Visit', 'Quote', 'Follow-up', 'Virtual Meeting', 'Meeting'];
 
-const taskStatuses = ['Pending', 'In Progress', 'Completed', 'Canceled'];
+const taskStatuses = ['Pending', 'In-Progress', 'Completed', 'Canceled'];
 
 const taskPriorities = ['Low', 'Medium', 'High', 'Urgent'];
 
