@@ -1,0 +1,258 @@
+name: Cucumber BDD Tests
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'cypress/e2e/**/*.feature'
+      - 'cypress/support/step_definitions/**/*.js'
+      - 'cypress.config.js'
+      - '.github/workflows/cucumber-tests.yml'
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch: # Allow manual triggering
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  cucumber-tests:
+    name: Run Cucumber BDD Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [18]
+
+    env:
+      CYPRESS_SUPABASE_URL: ${{ secrets.CYPRESS_SUPABASE_URL }}
+      CYPRESS_SUPABASE_ANON_KEY: ${{ secrets.CYPRESS_SUPABASE_ANON_KEY }}
+      CYPRESS_USER_EMAIL: ${{ secrets.CYPRESS_USER_EMAIL }}
+      CYPRESS_USER_PASSWORD: ${{ secrets.CYPRESS_USER_PASSWORD }}
+      CYPRESS_USER2_EMAIL: ${{ secrets.CYPRESS_USER2_EMAIL }}
+      CYPRESS_USER2_PASSWORD: ${{ secrets.CYPRESS_USER2_PASSWORD }}
+      CYPRESS_USER1_ID: ${{ secrets.CYPRESS_USER1_ID }}
+      CYPRESS_ORGANIZATION1_ID: ${{ secrets.CYPRESS_ORGANIZATION1_ID }}
+      SUPABASE_DB_HOST: ${{ secrets.SUPABASE_DB_HOST }}
+      SUPABASE_DB_PORT: ${{ secrets.SUPABASE_DB_PORT }}
+      SUPABASE_DB_NAME: ${{ secrets.SUPABASE_DB_NAME }}
+      SUPABASE_DB_USER: ${{ secrets.SUPABASE_DB_USER }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      SUPABASE_DB_SSL: ${{ secrets.SUPABASE_DB_SSL }}
+      CI: true
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify Cypress installation
+        run: npx cypress verify
+
+      - name: Create .env file
+        run: |
+          echo "CYPRESS_USER_EMAIL=${{ secrets.CYPRESS_USER_EMAIL }}" > .env
+          echo "CYPRESS_USER_PASSWORD=${{ secrets.CYPRESS_USER_PASSWORD }}" >> .env
+          echo "CYPRESS_BASE_URL=https://www.crmx.mx" >> .env
+          echo "CYPRESS_ENVIRONMENT=production" >> .env
+          echo "SUPABASE_DB_HOST=${{ secrets.SUPABASE_DB_HOST }}" >> .env
+          echo "SUPABASE_DB_PORT=${{ secrets.SUPABASE_DB_PORT }}" >> .env
+          echo "SUPABASE_DB_NAME=${{ secrets.SUPABASE_DB_NAME }}" >> .env
+          echo "SUPABASE_DB_USER=${{ secrets.SUPABASE_DB_USER }}" >> .env
+          echo "SUPABASE_DB_PASSWORD=${{ secrets.SUPABASE_DB_PASSWORD }}" >> .env
+          echo "SUPABASE_DB_SSL=${{ secrets.SUPABASE_DB_SSL }}" >> .env
+          echo "CYPRESS_SUPABASE_URL=${{ secrets.CYPRESS_SUPABASE_URL }}" >> .env
+          echo "CYPRESS_SUPABASE_ANON_KEY=${{ secrets.CYPRESS_SUPABASE_ANON_KEY }}" >> .env
+
+      - name: Create results directory
+        run: mkdir -p cypress/results
+
+      - name: Verify production environment and database setup
+        run: |
+          echo "🚨 Running Cucumber tests against PRODUCTION environment: https://www.crmx.mx"
+          echo "⚠️  Using test credentials from GitHub secrets"
+          echo "🗄️  Database connection tests included"
+          echo "🔐 Database credentials configured from secrets"
+          echo "📋 Tests: example.feature, homePageSanity.feature, task CRUD tests"
+
+      - name: List Cucumber feature files
+        run: |
+          echo "🥒 Cucumber Feature files to be executed:"
+          find cypress/e2e -name "*.feature" -type f | sort
+          echo "📊 Total feature files: $(find cypress/e2e -name "*.feature" -type f | wc -l)"
+          echo ""
+          echo "🔍 Step definition files:"
+          find cypress/support/step_definitions -name "*.js" -type f | sort || echo "  No step definitions found in support/step_definitions"
+          echo ""
+          echo "📋 Feature files breakdown:"
+          echo "  - sanity/homePageSanity.feature (Home page sanity checks)"
+          echo "  - tasks/createTaskAndDeleteFromBE.feature (Task CRUD from backend)"
+          echo "  - tasks/createTaskEditAndDeleteFromFE.feature (Task CRUD from frontend)"
+          echo "  - example.feature (Example feature)"
+
+      - name: Debug Environment Variables
+        run: |
+          echo "🔍 Environment variables check:"
+          echo "USER1_ID: '$CYPRESS_USER1_ID'"
+          echo "ORGANIZATION1_ID: '$CYPRESS_ORGANIZATION1_ID'"
+          echo "USER_EMAIL: '$CYPRESS_USER_EMAIL'"
+          echo "SUPABASE_URL: '$CYPRESS_SUPABASE_URL'"
+          echo "SUPABASE_ANON_KEY: '$CYPRESS_SUPABASE_ANON_KEY'"
+          echo ""
+          echo "📋 Checking if variables are empty:"
+          if [ -z "$CYPRESS_USER1_ID" ]; then echo "❌ USER1_ID is empty"; else echo "✅ USER1_ID has value"; fi
+          if [ -z "$CYPRESS_ORGANIZATION1_ID" ]; then echo "❌ ORGANIZATION1_ID is empty"; else echo "✅ ORGANIZATION1_ID has value"; fi
+          if [ -z "$CYPRESS_USER_EMAIL" ]; then echo "❌ USER_EMAIL is empty"; else echo "✅ USER_EMAIL has value"; fi
+          if [ -z "$CYPRESS_SUPABASE_URL" ]; then echo "❌ SUPABASE_URL is empty"; else echo "✅ SUPABASE_URL has value"; fi
+          echo ""
+          echo "🔍 CRITICAL CHECK: If any required variables are empty, tests will fail!"
+          if [ -z "$CYPRESS_USER1_ID" ] || [ -z "$CYPRESS_ORGANIZATION1_ID" ]; then
+            echo "🚨 CRITICAL ERROR: Required environment variables are missing!"
+            echo "🚨 Please check that these secrets exist in your GitHub repository:"
+            echo "🚨 - CYPRESS_USER1_ID"
+            echo "🚨 - CYPRESS_ORGANIZATION1_ID"
+            exit 1
+          else
+            echo "✅ All required environment variables are present"
+          fi
+
+      - name: Run Cucumber BDD Tests
+        id: cypress-cucumber
+        run: |
+          echo "🥒 Starting Cucumber BDD test execution..."
+          npx cypress run --spec "cypress/e2e/**/*.feature" \
+            --headless \
+            --reporter json \
+            --reporter-options outputPath=cypress/results/cucumber-results.json \
+            --config video=true,screenshotOnRunFailure=true
+
+      - name: Generate Cucumber HTML Report
+        if: always()
+        run: |
+          echo "📊 Generating Cucumber HTML report..."
+          if [ -f "cypress/results/cucumber-results.json" ]; then
+            echo "✅ Test results file found, processing..."
+            # You can add custom reporting logic here if needed
+            echo "📈 Test execution completed"
+          else
+            echo "⚠️ No test results file found"
+          fi
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cucumber-test-results
+          path: |
+            cypress/videos/
+            cypress/screenshots/
+            cypress/results/
+          retention-days: 7
+
+      - name: Upload test videos
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cucumber-test-videos
+          path: cypress/videos/
+          retention-days: 7
+
+      - name: Upload test screenshots
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cucumber-test-screenshots
+          path: cypress/screenshots/
+          retention-days: 7
+
+      - name: Comment test results on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            const cucumberOutcome = '${{ steps.cypress-cucumber.outcome }}';
+            const cucumberStatus = cucumberOutcome === 'success' ? '✅ Passed' : '❌ Failed';
+
+            let messageBody = `**Cucumber BDD Tests:** ${cucumberStatus}\n**Run Number:** #${context.runNumber}\n**Workflow:** Cucumber BDD Tests`;
+
+            if (cucumberOutcome === 'failure') {
+              messageBody += '\n\n🚨 **Cucumber BDD Tests Failed** - Please check the test results below.';
+              
+              const screenshotsPath = 'cypress/screenshots';
+              if (fs.existsSync(screenshotsPath)) {
+                const screenshots = fs.readdirSync(screenshotsPath, { recursive: true }).filter(file => file.endsWith('.png'));
+                if (screenshots.length > 0) {
+                  messageBody += '\n\n📸 **Screenshots captured:**\n- ' + screenshots.join('\n- ');
+                }
+              }
+              
+              const videosPath = 'cypress/videos';
+              if (fs.existsSync(videosPath)) {
+                const videos = fs.readdirSync(videosPath).filter(file => file.endsWith('.mp4'));
+                if (videos.length > 0) {
+                  messageBody += '\n\n🎥 **Videos recorded:**\n- ' + videos.join('\n- ');
+                }
+              }
+              
+              // Parse Cucumber test results
+              const cucumberResultsPath = 'cypress/results/cucumber-results.json';
+              
+              if (fs.existsSync(cucumberResultsPath)) {
+                try {
+                  const cucumberResults = JSON.parse(fs.readFileSync(cucumberResultsPath, 'utf8'));
+                  if (cucumberResults.runs && cucumberResults.runs.length > 0) {
+                    const run = cucumberResults.runs[0];
+                    const totalTests = run.stats.tests;
+                    const totalPassed = run.stats.passes;
+                    const totalFailed = run.stats.failures;
+                    const totalSkipped = run.stats.skipped;
+                    
+                    messageBody += `\n\n📊 **Cucumber Test Summary:**\n- **Total Tests:** ${totalTests}\n- **Passed:** ${totalPassed}\n- **Failed:** ${totalFailed}\n- **Skipped:** ${totalSkipped}`;
+                    
+                    if (run.stats.failures > 0) {
+                      messageBody += '\n\n❌ **Failed Cucumber Tests:**';
+                      run.tests.forEach(test => {
+                        if (test.state === 'failed') {
+                          messageBody += `\n- \`${test.title.join(' > ')}\` - ${test.error?.message || 'Unknown error'}`;
+                        }
+                      });
+                    }
+                  }
+                } catch (e) {
+                  messageBody += '\n\n⚠️ Could not parse Cucumber test results file.';
+                }
+              }
+              
+              const artifactUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+              messageBody += `\n\n📦 [**Download artifacts**](${artifactUrl})`;
+            } else {
+              messageBody += '\n\n🎉 **All Cucumber BDD tests passed successfully!**';
+            }
+
+            const message = `## 🥒 Cucumber BDD Test Results\n\n${messageBody}`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: message
+            });
+
+      - name: Fail workflow if tests failed
+        if: steps.cypress-cucumber.outcome == 'failure'
+        run: exit 1
