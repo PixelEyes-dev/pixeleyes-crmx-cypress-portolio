@@ -5,5 +5,5 @@ Feature: Example Feature
 
   Scenario: Basic test scenario
     Given I am on the homepage
-    When I see the page title
+    When I check the page title
     Then the title should contain "CRMx"
