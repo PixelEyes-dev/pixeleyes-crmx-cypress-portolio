@@ -1,0 +1,32 @@
+{
+  "updatedLead": {
+    "first_name": "UPDATED_FIRST_NAME",
+    "last_name": "Updated Last Name",
+    "email": "updated.lead@example.com",
+    "secondary_email": "updated.secondary@example.com",
+    "phone": "555-UPDATED",
+    "mobile": "555-MOBILE",
+    "company": "Updated Company Inc.",
+    "position": "Senior Manager",
+    "website": "https://updatedcompany.com",
+    "skype_id": "updated.skype.id",
+    "source": "referral",
+    "sector": "Healthcare",
+    "status": "Qualified",
+    "qualification": 9.0,
+    "annual_revenue": 5000000,
+    "employees_count": 100,
+    "description": "This is an updated lead with comprehensive data for testing update operations",
+    "street": "456 Updated Street",
+    "city": "Updated City",
+    "state_province": "NY",
+    "country": "US",
+    "postal_code": "54321",
+    "phone_country_code": "+1",
+    "mobile_country_code": "+1",
+    "x": "updated_x_handle",
+    "instagram": "updated.instagram.account",
+    "facebook": "updated.facebook.page",
+    "tiktok": "updated_tiktok_user"
+  }
+}
