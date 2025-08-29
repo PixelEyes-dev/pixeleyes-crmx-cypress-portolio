@@ -5,6 +5,12 @@ class LeadsPage {
   addLeadButton() {
     return cy.get('#addLeadButton');
   }
+  addLeadDialogContent() {
+    return cy.get('#addLeadDialogContent');
+  }
+  addLeadDialogContentForm() {
+    return cy.get('#addLeadDialogContent form');
+  }
   addNewLeadBasicInfoTab() {
     return cy.get('#lead-tab-basic');
   }
@@ -121,6 +127,9 @@ class LeadsPage {
   }
   actionsButton() {
     return cy.get('#lead-actions');
+  }
+  viewLeadDetailsButton() {
+    return cy.get('#leadViewDetailsMenuItem');
   }
   deleteLeadButton() {
     return cy.get('#leadDeleteMenuItem');
