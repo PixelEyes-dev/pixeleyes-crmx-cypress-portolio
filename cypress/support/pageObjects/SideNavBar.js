@@ -1,4 +1,7 @@
 class SideNavBar {
+  menu() {
+    return cy.get('div nav');
+  }
   leadsTab() {
     return cy.get('#side-nav-leads');
   }
