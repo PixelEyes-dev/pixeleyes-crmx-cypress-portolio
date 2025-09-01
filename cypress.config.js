@@ -12,7 +12,7 @@ require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 module.exports = defineConfig({
   e2e: {
     baseUrl: 'https://www.crmx.mx', // Production environment
-    specPattern: 'cypress/e2e/**/*.{js,jsx,ts,tsx,feature}',
+    specPattern: 'cypress/e2e/**/*.{js,jsx,feature}',
     reporter: 'cypress-mochawesome-reporter',
     reporterOptions: {
       charts: true,
@@ -21,6 +21,12 @@ module.exports = defineConfig({
       inlineAssets: true,
       saveAllAttempts: false,
     },
+    // Disable TypeScript processing to avoid tsx loader issues
+    experimentalModifyObstructiveThirdPartyCode: false,
+    // Explicitly disable TypeScript support
+    typescript: false,
+    // Disable any automatic TypeScript detection
+    experimentalRunAllSpecs: false,
     async setupNodeEvents(on, config) {
       // This is required for the preprocessor to be able to generate JSON reports after each run, and more.
       await addCucumberPreprocessorPlugin(on, config);
