@@ -27,15 +27,15 @@
   },
   "homepage": "https://github.com/gp-pixeleyes/pixeleyes-crmx-cypress-portolio#readme",
   "devDependencies": {
+    "@bahmutov/cypress-esbuild-preprocessor": "latest",
+    "@cypress/browserify-preprocessor": "latest",
     "@supabase/supabase-js": "^2.39.0",
     "@types/pg": "^8.15.4",
-    "cypress": "^14.5.0",
+    "cypress": "^15.0.0",
     "cypress-mochawesome-reporter": "^3.8.2",
     "dotenv": "^16.5.0",
     "pg": "^8.16.2",
-    "rimraf": "^6.0.1",
-    "@cypress/browserify-preprocessor": "latest",
-    "@bahmutov/cypress-esbuild-preprocessor": "latest"
+    "rimraf": "^6.0.1"
   },
   "dependencies": {
     "@badeball/cypress-cucumber-preprocessor": "^22.2.0"
