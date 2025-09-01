@@ -30,6 +30,10 @@ describe('Leads API - Create Lead', () => {
       accessToken = loginResponse.body.access_token;
       userId = loginResponse.body.user.id;
 
+      cy.log(`✅ Login successful, access token obtained`);
+      cy.log(`✅ User ID from login: ${userId}`);
+      console.log(`🔍 DEBUG: Login successful, User ID: ${userId}`);
+
       // Get user session to determine organization
       cy.request({
         method: 'GET',
@@ -40,6 +44,8 @@ describe('Leads API - Create Lead', () => {
         },
       }).then(sessionResponse => {
         expect(sessionResponse.status).to.equal(200);
+        cy.log(`✅ User session retrieved successfully`);
+        console.log(`🔍 DEBUG: User session retrieved successfully`);
 
         // Get organization ID from profiles table
         cy.request({
@@ -54,9 +60,11 @@ describe('Leads API - Create Lead', () => {
             user_uuid: userId,
           },
         }).then(orgResponse => {
+          console.log(`🔍 DEBUG: RPC response status: ${orgResponse.status}`);
           if (orgResponse.status === 200 && orgResponse.body) {
             organizationId = orgResponse.body;
-            cy.log(`✅ Organization ID retrieved: ${organizationId}`);
+            cy.log(`✅ Organization ID retrieved via RPC: ${organizationId}`);
+            console.log(`🔍 DEBUG: Organization ID retrieved via RPC: ${organizationId}`);
           } else {
             // Fallback: get organization from profiles table
             cy.request({
@@ -67,13 +75,14 @@ describe('Leads API - Create Lead', () => {
                 Authorization: `Bearer ${accessToken}`,
               },
             }).then(profileResponse => {
+              console.log(`🔍 DEBUG: Profile response status: ${profileResponse.status}`);
               expect(profileResponse.status).to.equal(200);
-              if (profileResponse.body && profileResponse.body.length > 0) {
-                organizationId = profileResponse.body[0].organization_id;
-                cy.log(`✅ Organization ID retrieved from profiles: ${organizationId}`);
-              } else {
-                throw new Error('Could not retrieve organization ID');
-              }
+              expect(profileResponse.body).to.be.an('array');
+              expect(profileResponse.body.length).to.be.greaterThan(0);
+
+              organizationId = profileResponse.body[0].organization_id;
+              cy.log(`✅ Organization ID retrieved from profiles: ${organizationId}`);
+              console.log(`🔍 DEBUG: Organization ID retrieved from profiles: ${organizationId}`);
             });
           }
         });
