@@ -26,8 +26,10 @@
     "url": "https://github.com/gp-pixeleyes/pixeleyes-crmx-cypress-portolio/issues"
   },
   "homepage": "https://github.com/gp-pixeleyes/pixeleyes-crmx-cypress-portolio#readme",
+  "engines": {
+    "node": ">=18.19.0"
+  },
   "devDependencies": {
-    "@bahmutov/cypress-esbuild-preprocessor": "latest",
     "@cypress/browserify-preprocessor": "latest",
     "@supabase/supabase-js": "^2.39.0",
     "@types/pg": "^8.15.4",
