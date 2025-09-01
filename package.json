@@ -32,12 +32,12 @@
     "@supabase/supabase-js": "^2.39.0",
     "@types/pg": "^8.15.4",
     "cypress": "^15.0.0",
-    "cypress-mochawesome-reporter": "^3.8.2",
+    "cypress-mochawesome-reporter": "^4.0.2",
     "dotenv": "^16.5.0",
     "pg": "^8.16.2",
     "rimraf": "^6.0.1"
   },
   "dependencies": {
-    "@badeball/cypress-cucumber-preprocessor": "^22.2.0"
+    "@badeball/cypress-cucumber-preprocessor": "^23.0.0"
   }
 }
