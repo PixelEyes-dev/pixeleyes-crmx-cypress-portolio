@@ -14,6 +14,9 @@ module.exports = defineConfig({
     baseUrl: 'https://www.crmx.mx', // Production environment
     specPattern: 'cypress/e2e/**/*.{js,jsx,feature}',
     reporter: 'cypress-mochawesome-reporter',
+    // Cypress Cloud configuration
+    recordKey: process.env.CYPRESS_RECORD_KEY,
+    projectId: process.env.CYPRESS_PROJECT_ID,
     reporterOptions: {
       charts: true,
       reportPageTitle: 'CRMx Test Results',
@@ -186,6 +189,8 @@ module.exports = defineConfig({
         ORGANIZATION1_ID: process.env.CYPRESS_ORGANIZATION1_ID,
         USER2_EMAIL: process.env.CYPRESS_USER2_EMAIL,
         USER2_PASSWORD: process.env.CYPRESS_USER2_PASSWORD,
+        RECORD_KEY: process.env.CYPRESS_RECORD_KEY,
+        PROJECT_ID: process.env.CYPRESS_PROJECT_ID,
         // Also include all other process.env variables
         ...process.env,
       };
