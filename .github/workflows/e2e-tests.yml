@@ -19,13 +19,13 @@ permissions:
 
 jobs:
   cypress-run:
-    name: E2E Tests (Production)
+    name: Run E2E Tests (20)
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
-        containers: [1, 2] # Uses 2 parallel instances
+        containers: [1] # Uses 1 parallel instance
 
     # Add environment for better tracking
     env:
@@ -77,7 +77,6 @@ jobs:
           browser: chrome
           record: true
           parallel: true
-          group: 'E2E Tests (Production)'
           config: video=true,screenshotOnRunFailure=true
           spec: cypress/e2e/sanity/homePageSanity.cy.js,cypress/e2e/sanity/responsiveDesign.cy.js,cypress/e2e/authentication/userLogin.cy.js,cypress/e2e/onboarding/userOnboarding.cy.js,cypress/e2e/leads/createLeadandDeleteFromBE.cy.js,cypress/e2e/leads/editLeadandDeleteFromFE.cy.js,cypress/e2e/leads/createAndConvertLeadToCustomer.cy.js,cypress/e2e/customers/createCustomerAndDeleteFromBE.cy.js,cypress/e2e/customers/createEditCustomerAndDeleteFromFE.cy.js,cypress/e2e/sales/createSaleAndDeleteFromBE.cy.js,cypress/e2e/sales/createSaleEditAndDeleteFromFE.cy.js,cypress/e2e/tasks/createTaskAndDeleteFromBE.cy.js,cypress/e2e/tasks/createTaskEditAndDeleteFromFE.cy.js
           wait-on: 'https://www.crmx.mx'

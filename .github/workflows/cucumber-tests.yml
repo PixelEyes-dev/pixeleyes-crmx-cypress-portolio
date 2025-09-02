@@ -141,7 +141,6 @@ jobs:
             --reporter json \
             --reporter-options outputPath=cypress/results/cucumber-results.json \
             --record \
-            --group "Cucumber Tests" \
             --config video=true,screenshotOnRunFailure=true
 
       - name: Generate Cucumber HTML Report
