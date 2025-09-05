@@ -14,6 +14,18 @@ module.exports = defineConfig({
     baseUrl: 'https://www.crmx.mx', // Production environment
     specPattern: 'cypress/e2e/**/*.{js,jsx,feature}',
     reporter: 'cypress-mochawesome-reporter',
+    // Cross-browser testing configuration
+    crossBrowser: {
+      enabled: true,
+      viewports: [
+        { width: 1280, height: 720 },
+        { width: 1920, height: 1080 },
+        { width: 768, height: 1024 }, // Mobile landscape
+      ],
+    },
+    // Visual regression settings
+    screenshotsFolder: 'cypress/screenshots/visual-regression',
+    videosFolder: 'cypress/videos/visual-regression',
     // Cypress Cloud configuration
     recordKey: process.env.CYPRESS_RECORD_KEY,
     projectId: process.env.CYPRESS_PROJECT_ID,
@@ -38,6 +50,10 @@ module.exports = defineConfig({
 
       // Add cypress-mochawesome-reporter plugin
       require('cypress-mochawesome-reporter/plugin')(on);
+
+      // Visual regression plugin
+      const { configureVisualRegression } = require('cypress-visual-regression');
+      configureVisualRegression(on);
       // Add custom Supabase query task
       on('task', {
         async querySupabase({ table, filter }) {
@@ -214,5 +230,8 @@ module.exports = defineConfig({
     defaultCommandTimeout: 10000,
     requestTimeout: 10000,
     responseTimeout: 10000,
+    // Override for cross-browser specific configs
+    screenshotsFolder: 'cypress/screenshots/cross-browser',
+    videosFolder: 'cypress/videos/cross-browser',
   },
 });
