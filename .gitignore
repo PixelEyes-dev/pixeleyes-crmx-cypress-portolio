@@ -9,6 +9,9 @@ cypress/videos/
 cypress/screenshots/
 cypress/downloads/
 cypress/reports/
+cypress/html/
+cypress/screenshots/visual-regression/
+cypress/screenshots/visual-regression/baselines/
 
 # Environment variables
 .env
