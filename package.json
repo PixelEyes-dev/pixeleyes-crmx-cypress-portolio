@@ -34,7 +34,15 @@
     "test": "cypress run",
     "test:open": "cypress open",
     "test:report": "cypress run",
-    "clean-reports": "rimraf cypress/reports && mkdir cypress/reports"
+    "clean-reports": "rimraf cypress/reports && mkdir cypress/reports",
+    "k6:auth": "k6 run --out json=performance-tests/k6/results/auth-results.json performance-tests/k6/auth-load-test.js",
+    "k6:auth:validate": "node performance-tests/k6/scripts/validate-k6-results-simple.cjs performance-tests/k6/results/auth-results.json",
+    "k6:auth:report": "node performance-tests/k6/scripts/generate-k6-visual-report.cjs performance-tests/k6/results/auth-results.json",
+    "k6:auth:full": "npm run k6:auth && npm run k6:auth:validate && npm run k6:auth:report",
+    "k6:stress": "k6 run --out json=performance-tests/k6/results/stress-results.json performance-tests/k6/auth-stress-test.js",
+    "k6:stress:validate": "node performance-tests/k6/scripts/validate-k6-results-simple.cjs performance-tests/k6/results/stress-results.json",
+    "k6:stress:report": "node performance-tests/k6/scripts/generate-k6-visual-report.cjs performance-tests/k6/results/stress-results.json",
+    "k6:stress:full": "npm run k6:stress && npm run k6:stress:validate && npm run k6:stress:report"
   },
   "repository": {
     "type": "git",
