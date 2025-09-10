@@ -42,7 +42,13 @@
     "k6:stress": "k6 run --out json=performance-tests/k6/results/stress-results.json performance-tests/k6/auth-stress-test.js",
     "k6:stress:validate": "node performance-tests/k6/scripts/validate-k6-results-simple.cjs performance-tests/k6/results/stress-results.json",
     "k6:stress:report": "node performance-tests/k6/scripts/generate-k6-visual-report.cjs performance-tests/k6/results/stress-results.json",
-    "k6:stress:full": "npm run k6:stress && npm run k6:stress:validate && npm run k6:stress:report"
+    "k6:stress:full": "npm run k6:stress && npm run k6:stress:validate && npm run k6:stress:report",
+    "cypress:run:security": "cypress run --spec cypress/e2e/security/**/*.cy.js",
+    "cypress:run:security:headless": "cypress run --spec cypress/e2e/security/**/*.cy.js --headless",
+    "cypress:open:security": "cypress open --config specPattern=cypress/e2e/security/**/*.cy.js",
+    "security:test": "npm run cypress:run:security",
+    "security:lint": "eslint cypress/e2e/security/ --ext .js,.ts --config .eslintrc.security.js",
+    "security:audit": "npm audit --audit-level=high"
   },
   "repository": {
     "type": "git",
@@ -60,12 +66,14 @@
   },
   "devDependencies": {
     "@cypress/browserify-preprocessor": "latest",
+    "@eslint/js": "^9.35.0",
     "@supabase/supabase-js": "^2.39.0",
     "@types/pg": "^8.15.4",
     "cypress": "^15.0.0",
     "cypress-mochawesome-reporter": "^4.0.2",
     "cypress-visual-regression": "^5.3.0",
     "dotenv": "^16.5.0",
+    "eslint": "^9.35.0",
     "pg": "^8.16.2",
     "rimraf": "^6.0.1"
   },
