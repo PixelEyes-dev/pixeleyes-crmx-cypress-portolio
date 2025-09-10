@@ -124,12 +124,12 @@ jobs:
 
       - name: Run CRUD API Tests (Sequential)
         id: cypress-crud
-        run: npx cypress run --spec "cypress/e2e/api/leads/01-apiCreateLead.cy.js,cypress/e2e/api/leads/02-apiReadLead.cy.js,cypress/e2e/api/leads/03-apiUpdateLead.cy.js,cypress/e2e/api/leads/04-apiDeleteLead.cy.js" --headless --reporter json --reporter-options outputPath=cypress/results/crud-results.json --record
+        run: npx cypress run --spec "cypress/e2e/api/leads/01-apiCreateLead.cy.js,cypress/e2e/api/leads/02-apiReadLead.cy.js,cypress/e2e/api/leads/03-apiUpdateLead.cy.js,cypress/e2e/api/leads/04-apiDeleteLead.cy.js" --headless --reporter json --reporter-options outputPath=cypress/results/crud-results.json
 
       - name: Run Other API Tests
         id: cypress-other
         if: always()
-        run: npx cypress run --spec "cypress/e2e/api/**/!(01-apiCreateLead|02-apiReadLead|03-apiUpdateLead|04-apiDeleteLead).cy.js" --headless --reporter json --reporter-options outputPath=cypress/results/other-results.json --record
+        run: npx cypress run --spec "cypress/e2e/api/**/!(01-apiCreateLead|02-apiReadLead|03-apiUpdateLead|04-apiDeleteLead).cy.js" --headless --reporter json --reporter-options outputPath=cypress/results/other-results.json
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
