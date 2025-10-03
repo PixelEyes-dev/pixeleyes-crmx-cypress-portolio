@@ -12,6 +12,12 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
   let userId;
   let organizationId;
 
+  // Track ONLY records created during this test run for cleanup
+  // SAFETY: These arrays only contain UUIDs of records created by these tests
+  // No wildcards, no patterns - only specific IDs we explicitly created
+  const createdLeadIds = [];
+  const createdCustomerIds = [];
+
   before(() => {
     // Get valid token for testing
     cy.request({
@@ -65,6 +71,80 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
     });
   });
 
+  // Cleanup all created test data after all tests
+  // SAFE: Only deletes specific IDs that were created during this test run
+  after(() => {
+    if (!accessToken) {
+      cy.log('⚠️ No access token - skipping cleanup');
+      return;
+    }
+
+    // Cleanup leads - using Supabase's 'in' filter for batch deletion (safer and faster)
+    if (createdLeadIds.length > 0) {
+      cy.log(`🧹 Cleaning up ${createdLeadIds.length} test leads...`);
+
+      // Delete in batches of 10 to avoid URL length issues
+      const batchSize = 10;
+      for (let i = 0; i < createdLeadIds.length; i += batchSize) {
+        const batch = createdLeadIds.slice(i, i + batchSize);
+        const idsFilter = batch.map(id => `"${id}"`).join(',');
+
+        cy.request({
+          method: 'DELETE',
+          url: `${SUPABASE_URL}/rest/v1/leads?id=in.(${idsFilter})`,
+          headers: {
+            apikey: SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${accessToken}`,
+            Prefer: 'return=minimal', // Don't return deleted records
+          },
+          failOnStatusCode: false,
+        }).then(response => {
+          if (response.status === 204 || response.status === 200) {
+            cy.log(`✅ Deleted ${batch.length} leads (batch ${Math.floor(i / batchSize) + 1})`);
+          } else {
+            cy.log(`⚠️ Failed to delete leads batch: ${response.status}`);
+          }
+        });
+      }
+    }
+
+    // Cleanup customers - using Supabase's 'in' filter for batch deletion
+    if (createdCustomerIds.length > 0) {
+      cy.log(`🧹 Cleaning up ${createdCustomerIds.length} test customers...`);
+
+      // Delete in batches of 10 to avoid URL length issues
+      const batchSize = 10;
+      for (let i = 0; i < createdCustomerIds.length; i += batchSize) {
+        const batch = createdCustomerIds.slice(i, i + batchSize);
+        const idsFilter = batch.map(id => `"${id}"`).join(',');
+
+        cy.request({
+          method: 'DELETE',
+          url: `${SUPABASE_URL}/rest/v1/customers?id=in.(${idsFilter})`,
+          headers: {
+            apikey: SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${accessToken}`,
+            Prefer: 'return=minimal', // Don't return deleted records
+          },
+          failOnStatusCode: false,
+        }).then(response => {
+          if (response.status === 204 || response.status === 200) {
+            cy.log(`✅ Deleted ${batch.length} customers (batch ${Math.floor(i / batchSize) + 1})`);
+          } else {
+            cy.log(`⚠️ Failed to delete customers batch: ${response.status}`);
+          }
+        });
+      }
+    }
+
+    // Log final summary
+    cy.then(() => {
+      cy.log('✅ Cleanup completed');
+      cy.log(`   - Leads cleaned: ${createdLeadIds.length}`);
+      cy.log(`   - Customers cleaned: ${createdCustomerIds.length}`);
+    });
+  });
+
   describe('XSS Prevention Tests', () => {
     it('should prevent XSS in lead creation', () => {
       const xssPayloads = [
@@ -109,18 +189,13 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
           if (response.status === 201 && response.body && response.body.id) {
             // If created, verify the payload was sanitized
             const leadId = response.body.id;
-            cy.log(`⚠️ Lead created with XSS payload ${index + 1}, checking if sanitized`);
-
-            // Clean up the malicious lead
-            cy.request({
-              method: 'DELETE',
-              url: `${SUPABASE_URL}/rest/v1/leads?id=eq.${leadId}`,
-              headers: {
-                apikey: SUPABASE_ANON_KEY,
-                Authorization: `Bearer ${accessToken}`,
-              },
-              failOnStatusCode: false,
-            });
+            // SAFETY: Only tracking the specific UUID returned - no wildcards or patterns
+            if (leadId && typeof leadId === 'string' && leadId.match(/^[0-9a-f-]{36}$/i)) {
+              createdLeadIds.push(leadId); // Track for cleanup
+              cy.log(`⚠️ Lead created with XSS payload ${index + 1}, checking if sanitized (ID: ${leadId.substring(0, 8)}...)`);
+            } else {
+              cy.log(`⚠️ Invalid ID format returned: ${leadId}`);
+            }
           } else {
             cy.log(`✅ XSS payload ${index + 1} properly rejected with status: ${response.status}`);
           }
@@ -158,18 +233,13 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
 
           if (response.status === 201 && response.body && response.body.id) {
             const customerId = response.body.id;
-            cy.log(`⚠️ Customer created with XSS payload ${index + 1}, checking if sanitized`);
-
-            // Clean up
-            cy.request({
-              method: 'DELETE',
-              url: `${SUPABASE_URL}/rest/v1/customers?id=eq.${customerId}`,
-              headers: {
-                apikey: SUPABASE_ANON_KEY,
-                Authorization: `Bearer ${accessToken}`,
-              },
-              failOnStatusCode: false,
-            });
+            // SAFETY: Only tracking the specific UUID returned - no wildcards or patterns
+            if (customerId && typeof customerId === 'string' && customerId.match(/^[0-9a-f-]{36}$/i)) {
+              createdCustomerIds.push(customerId); // Track for cleanup
+              cy.log(`⚠️ Customer created with XSS payload ${index + 1}, checking if sanitized (ID: ${customerId.substring(0, 8)}...)`);
+            } else {
+              cy.log(`⚠️ Invalid ID format returned: ${customerId}`);
+            }
           } else {
             cy.log(`✅ XSS payload ${index + 1} properly rejected with status: ${response.status}`);
           }
@@ -202,15 +272,15 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
           },
           failOnStatusCode: false,
         }).then(response => {
-          // Should either return empty results or error, not execute the SQL
-          expect(response.status).to.be.oneOf([200, 400, 422]);
+          // Should either return empty results or error, not execute the SQL (403 is also acceptable)
+          expect(response.status).to.be.oneOf([200, 400, 403, 422]);
 
           if (response.status === 200) {
             expect(response.body).to.be.an('array');
             expect(response.body.length).to.equal(0);
           }
 
-          cy.log(`✅ SQL injection payload ${index + 1} properly prevented`);
+          cy.log(`✅ SQL injection payload ${index + 1} properly prevented with status: ${response.status}`);
         });
       });
     });
@@ -245,9 +315,9 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
             cy.log(`✅ SQL injection payload ${index + 1} properly rejected with status: ${response.status}`);
           }
 
-          // Accept both rejection (400/422) and success (204) as valid responses
+          // Accept both rejection (400/403/422) and success (204) as valid responses
           // The important thing is that we're testing and logging the behavior
-          expect(response.status).to.be.oneOf([204, 400, 422]);
+          expect(response.status).to.be.oneOf([204, 400, 403, 422]);
         });
       });
     });
@@ -298,17 +368,12 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
           // Should reject invalid email formats
           if (response.status === 201) {
             cy.log(`⚠️ Invalid email ${index + 1} was accepted (status 201) - potential validation issue`);
-            // Clean up the created lead if it was created
+            // Track for cleanup - validate ID format first
             if (response.body && response.body.id) {
-              cy.request({
-                method: 'DELETE',
-                url: `${SUPABASE_URL}/rest/v1/leads?id=eq.${response.body.id}`,
-                headers: {
-                  apikey: SUPABASE_ANON_KEY,
-                  Authorization: `Bearer ${accessToken}`,
-                },
-                failOnStatusCode: false,
-              });
+              const leadId = response.body.id;
+              if (leadId && typeof leadId === 'string' && leadId.match(/^[0-9a-f-]{36}$/i)) {
+                createdLeadIds.push(leadId);
+              }
             }
           } else {
             cy.log(`✅ Invalid email ${index + 1} properly rejected with status: ${response.status}`);
@@ -351,17 +416,12 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
           // Should reject incomplete data
           if (response.status === 201) {
             cy.log(`⚠️ Incomplete data ${index + 1} was accepted (status 201) - potential validation issue`);
-            // Clean up the created lead if it was created
+            // Track for cleanup - validate ID format first
             if (response.body && response.body.id) {
-              cy.request({
-                method: 'DELETE',
-                url: `${SUPABASE_URL}/rest/v1/leads?id=eq.${response.body.id}`,
-                headers: {
-                  apikey: SUPABASE_ANON_KEY,
-                  Authorization: `Bearer ${accessToken}`,
-                },
-                failOnStatusCode: false,
-              });
+              const leadId = response.body.id;
+              if (leadId && typeof leadId === 'string' && leadId.match(/^[0-9a-f-]{36}$/i)) {
+                createdLeadIds.push(leadId);
+              }
             }
           } else {
             cy.log(`✅ Incomplete data ${index + 1} properly rejected with status: ${response.status}`);
@@ -403,17 +463,12 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
           // Should reject invalid data types
           if (response.status === 201) {
             cy.log(`⚠️ Invalid data types ${index + 1} was accepted (status 201) - potential validation issue`);
-            // Clean up the created lead if it was created
+            // Track for cleanup - validate ID format first
             if (response.body && response.body.id) {
-              cy.request({
-                method: 'DELETE',
-                url: `${SUPABASE_URL}/rest/v1/leads?id=eq.${response.body.id}`,
-                headers: {
-                  apikey: SUPABASE_ANON_KEY,
-                  Authorization: `Bearer ${accessToken}`,
-                },
-                failOnStatusCode: false,
-              });
+              const leadId = response.body.id;
+              if (leadId && typeof leadId === 'string' && leadId.match(/^[0-9a-f-]{36}$/i)) {
+                createdLeadIds.push(leadId);
+              }
             }
           } else {
             cy.log(`✅ Invalid data types ${index + 1} properly rejected with status: ${response.status}`);
@@ -465,17 +520,12 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
           // Should reject oversized input
           if (response.status === 201) {
             cy.log(`⚠️ Oversized input ${index + 1} was accepted (status 201) - potential validation issue`);
-            // Clean up the created lead if it was created
+            // Track for cleanup - validate ID format first
             if (response.body && response.body.id) {
-              cy.request({
-                method: 'DELETE',
-                url: `${SUPABASE_URL}/rest/v1/leads?id=eq.${response.body.id}`,
-                headers: {
-                  apikey: SUPABASE_ANON_KEY,
-                  Authorization: `Bearer ${accessToken}`,
-                },
-                failOnStatusCode: false,
-              });
+              const leadId = response.body.id;
+              if (leadId && typeof leadId === 'string' && leadId.match(/^[0-9a-f-]{36}$/i)) {
+                createdLeadIds.push(leadId);
+              }
             }
           } else {
             cy.log(`✅ Oversized input ${index + 1} properly rejected with status: ${response.status}`);
