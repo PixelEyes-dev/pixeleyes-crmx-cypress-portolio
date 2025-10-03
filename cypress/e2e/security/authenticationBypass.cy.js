@@ -61,9 +61,9 @@ describe('Security Tests - Authentication Bypass', () => {
           },
           failOnStatusCode: false,
         }).then(response => {
-          // Should reject the malicious input
-          expect(response.status).to.be.oneOf([400, 401, 422]);
-          cy.log(`✅ SQL injection payload ${index + 1} properly rejected`);
+          // Should reject the malicious input (403 is also acceptable - means Forbidden)
+          expect(response.status).to.be.oneOf([400, 401, 403, 422]);
+          cy.log(`✅ SQL injection payload ${index + 1} properly rejected with status: ${response.status}`);
         });
       });
     });
