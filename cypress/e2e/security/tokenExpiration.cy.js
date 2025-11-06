@@ -13,6 +13,20 @@ describe('Security Tests - Token Expiration', () => {
   let userId;
   let organizationId;
 
+  const safeAtob = value => {
+    if (typeof globalThis.atob === 'function') {
+      return globalThis.atob(value);
+    }
+    return Buffer.from(value, 'base64').toString('binary');
+  };
+
+  const safeBtoa = value => {
+    if (typeof globalThis.btoa === 'function') {
+      return globalThis.btoa(value);
+    }
+    return Buffer.from(value, 'binary').toString('base64');
+  };
+
   before(() => {
     // Get a fresh valid token for testing
     cy.request({
@@ -317,15 +331,15 @@ describe('Security Tests - Token Expiration', () => {
     try {
       // Decode the JWT token
       const parts = originalToken.split('.');
-      const header = JSON.parse(atob(parts[0]));
-      const payload = JSON.parse(atob(parts[1]));
+      const header = JSON.parse(safeAtob(parts[0]));
+      const payload = JSON.parse(safeAtob(parts[1]));
 
       // Set expiration to past time (1 hour ago)
       payload.exp = Math.floor(Date.now() / 1000) - 3600;
 
       // Re-encode the token (this will have invalid signature, but that's expected)
-      const newHeader = btoa(JSON.stringify(header));
-      const newPayload = btoa(JSON.stringify(payload));
+      const newHeader = safeBtoa(JSON.stringify(header));
+      const newPayload = safeBtoa(JSON.stringify(payload));
 
       // Use the original signature (which will be invalid for the modified payload)
       return `${newHeader}.${newPayload}.${parts[2]}`;
@@ -338,12 +352,12 @@ describe('Security Tests - Token Expiration', () => {
   function createTokenWithInvalidSignature(originalToken) {
     try {
       const parts = originalToken.split('.');
-      const header = JSON.parse(atob(parts[0]));
-      const payload = JSON.parse(atob(parts[1]));
+      const header = JSON.parse(safeAtob(parts[0]));
+      const payload = JSON.parse(safeAtob(parts[1]));
 
       // Re-encode with invalid signature
-      const newHeader = btoa(JSON.stringify(header));
-      const newPayload = btoa(JSON.stringify(payload));
+      const newHeader = safeBtoa(JSON.stringify(header));
+      const newPayload = safeBtoa(JSON.stringify(payload));
       const invalidSignature = 'invalid-signature-here';
 
       return `${newHeader}.${newPayload}.${invalidSignature}`;

@@ -20,7 +20,17 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
 
   // Helper function to clean up a single lead immediately (works in CI)
   const cleanupLead = leadId => {
-    if (!accessToken || !leadId) return;
+    if (!leadId) {
+      cy.log('⚠️ cleanupLead called without leadId');
+      return;
+    }
+
+    if (!accessToken) {
+      cy.log(`⚠️ cleanupLead skipped - missing access token for lead ${leadId.substring(0, 8)}...`);
+      return;
+    }
+
+    cy.log(`🧹 Attempting immediate cleanup for lead ${leadId.substring(0, 8)}...`);
     cy.request({
       method: 'DELETE',
       url: `${SUPABASE_URL}/rest/v1/leads?id=eq.${leadId}`,
@@ -30,18 +40,35 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
         Prefer: 'return=minimal',
       },
       failOnStatusCode: false,
-    }).then(response => {
-      if (response.status === 204 || response.status === 200) {
-        cy.log(`✅ Cleaned up lead: ${leadId.substring(0, 8)}...`);
-      } else {
-        cy.log(`⚠️ Failed to cleanup lead ${leadId.substring(0, 8)}...: ${response.status}`);
-      }
-    });
+    })
+      .then(response => {
+        if (response.status === 204 || response.status === 200) {
+          cy.log(`✅ Cleaned up lead: ${leadId.substring(0, 8)}...`);
+        } else {
+          cy.log(`⚠️ Failed to cleanup lead ${leadId.substring(0, 8)}...: ${response.status}`);
+          if (response.body) {
+            cy.log(`🔍 Lead cleanup response body:`, response.body);
+          }
+        }
+      })
+      .catch(error => {
+        cy.log(`❌ cleanupLead error for ${leadId.substring(0, 8)}...`, error);
+      });
   };
 
   // Helper function to clean up a single customer immediately (works in CI)
   const cleanupCustomer = customerId => {
-    if (!accessToken || !customerId) return;
+    if (!customerId) {
+      cy.log('⚠️ cleanupCustomer called without customerId');
+      return;
+    }
+
+    if (!accessToken) {
+      cy.log(`⚠️ cleanupCustomer skipped - missing access token for customer ${customerId.substring(0, 8)}...`);
+      return;
+    }
+
+    cy.log(`🧹 Attempting immediate cleanup for customer ${customerId.substring(0, 8)}...`);
     cy.request({
       method: 'DELETE',
       url: `${SUPABASE_URL}/rest/v1/customers?id=eq.${customerId}`,
@@ -51,13 +78,20 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
         Prefer: 'return=minimal',
       },
       failOnStatusCode: false,
-    }).then(response => {
-      if (response.status === 204 || response.status === 200) {
-        cy.log(`✅ Cleaned up customer: ${customerId.substring(0, 8)}...`);
-      } else {
-        cy.log(`⚠️ Failed to cleanup customer ${customerId.substring(0, 8)}...: ${response.status}`);
-      }
-    });
+    })
+      .then(response => {
+        if (response.status === 204 || response.status === 200) {
+          cy.log(`✅ Cleaned up customer: ${customerId.substring(0, 8)}...`);
+        } else {
+          cy.log(`⚠️ Failed to cleanup customer ${customerId.substring(0, 8)}...: ${response.status}`);
+          if (response.body) {
+            cy.log(`🔍 Customer cleanup response body:`, response.body);
+          }
+        }
+      })
+      .catch(error => {
+        cy.log(`❌ cleanupCustomer error for ${customerId.substring(0, 8)}...`, error);
+      });
   };
 
   before(() => {
@@ -196,6 +230,7 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
 
   describe('XSS Prevention Tests', () => {
     it('should prevent XSS in lead creation', () => {
+      /* eslint-disable security/detect-script-url */
       const xssPayloads = [
         '<script>alert("XSS")</script>',
         '<img src="x" onerror="alert(\'XSS\')">',
@@ -208,6 +243,7 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
         '<img src="x" onerror="alert(document.cookie)">',
         '<script>fetch("/api/admin/users").then(r=>r.text()).then(d=>alert(d))</script>',
       ];
+      /* eslint-enable security/detect-script-url */
 
       xssPayloads.forEach((payload, index) => {
         cy.log(`🔒 Testing XSS payload ${index + 1} in lead creation`);
@@ -255,7 +291,9 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
     });
 
     it('should prevent XSS in customer creation', () => {
+      /* eslint-disable security/detect-script-url */
       const xssPayloads = ['<script>alert("XSS")</script>', '<img src="x" onerror="alert(\'XSS\')">', 'javascript:alert("XSS")'];
+      /* eslint-enable security/detect-script-url */
 
       xssPayloads.forEach((payload, index) => {
         cy.log(`🔒 Testing XSS payload ${index + 1} in customer creation`);
@@ -664,11 +702,20 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
             Prefer: 'return=minimal',
           },
           failOnStatusCode: false,
-        }).then(response => {
-          if (response.status === 204 || response.status === 200) {
-            cy.log(`✅ Final cleanup: Deleted ${batch.length} leads`);
-          }
-        });
+        })
+          .then(response => {
+            if (response.status === 204 || response.status === 200) {
+              cy.log(`✅ Final cleanup: Deleted ${batch.length} leads`);
+            } else {
+              cy.log(`⚠️ Final cleanup failed for lead batch (status ${response.status})`);
+              if (response.body) {
+                cy.log(`🔍 Lead batch cleanup response body:`, response.body);
+              }
+            }
+          })
+          .catch(error => {
+            cy.log('❌ Final cleanup error for lead batch', error);
+          });
       }
     }
 
@@ -687,11 +734,20 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
             Prefer: 'return=minimal',
           },
           failOnStatusCode: false,
-        }).then(response => {
-          if (response.status === 204 || response.status === 200) {
-            cy.log(`✅ Final cleanup: Deleted ${batch.length} customers`);
-          }
-        });
+        })
+          .then(response => {
+            if (response.status === 204 || response.status === 200) {
+              cy.log(`✅ Final cleanup: Deleted ${batch.length} customers`);
+            } else {
+              cy.log(`⚠️ Final cleanup failed for customer batch (status ${response.status})`);
+              if (response.body) {
+                cy.log(`🔍 Customer batch cleanup response body:`, response.body);
+              }
+            }
+          })
+          .catch(error => {
+            cy.log('❌ Final cleanup error for customer batch', error);
+          });
       }
     }
   });
