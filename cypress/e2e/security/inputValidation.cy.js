@@ -18,6 +18,48 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
   const createdLeadIds = [];
   const createdCustomerIds = [];
 
+  // Helper function to clean up a single lead immediately (works in CI)
+  const cleanupLead = leadId => {
+    if (!accessToken || !leadId) return;
+    cy.request({
+      method: 'DELETE',
+      url: `${SUPABASE_URL}/rest/v1/leads?id=eq.${leadId}`,
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${accessToken}`,
+        Prefer: 'return=minimal',
+      },
+      failOnStatusCode: false,
+    }).then(response => {
+      if (response.status === 204 || response.status === 200) {
+        cy.log(`✅ Cleaned up lead: ${leadId.substring(0, 8)}...`);
+      } else {
+        cy.log(`⚠️ Failed to cleanup lead ${leadId.substring(0, 8)}...: ${response.status}`);
+      }
+    });
+  };
+
+  // Helper function to clean up a single customer immediately (works in CI)
+  const cleanupCustomer = customerId => {
+    if (!accessToken || !customerId) return;
+    cy.request({
+      method: 'DELETE',
+      url: `${SUPABASE_URL}/rest/v1/customers?id=eq.${customerId}`,
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${accessToken}`,
+        Prefer: 'return=minimal',
+      },
+      failOnStatusCode: false,
+    }).then(response => {
+      if (response.status === 204 || response.status === 200) {
+        cy.log(`✅ Cleaned up customer: ${customerId.substring(0, 8)}...`);
+      } else {
+        cy.log(`⚠️ Failed to cleanup customer ${customerId.substring(0, 8)}...: ${response.status}`);
+      }
+    });
+  };
+
   before(() => {
     // Get valid token for testing
     cy.request({
@@ -200,6 +242,8 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
             if (leadId && typeof leadId === 'string' && leadId.match(/^[0-9a-f-]{36}$/i)) {
               createdLeadIds.push(leadId); // Track for cleanup
               cy.log(`⚠️ Lead created with XSS payload ${index + 1}, checking if sanitized (ID: ${leadId.substring(0, 8)}...)`);
+              // IMMEDIATE CLEANUP - Works in CI/headless mode
+              cleanupLead(leadId);
             } else {
               cy.log(`⚠️ Invalid ID format returned: ${leadId}`);
             }
@@ -244,6 +288,8 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
             if (customerId && typeof customerId === 'string' && customerId.match(/^[0-9a-f-]{36}$/i)) {
               createdCustomerIds.push(customerId); // Track for cleanup
               cy.log(`⚠️ Customer created with XSS payload ${index + 1}, checking if sanitized (ID: ${customerId.substring(0, 8)}...)`);
+              // IMMEDIATE CLEANUP - Works in CI/headless mode
+              cleanupCustomer(customerId);
             } else {
               cy.log(`⚠️ Invalid ID format returned: ${customerId}`);
             }
@@ -380,6 +426,8 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
               const leadId = response.body.id;
               if (leadId && typeof leadId === 'string' && leadId.match(/^[0-9a-f-]{36}$/i)) {
                 createdLeadIds.push(leadId);
+                // IMMEDIATE CLEANUP - Works in CI/headless mode
+                cleanupLead(leadId);
               }
             }
           } else {
@@ -428,6 +476,8 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
               const leadId = response.body.id;
               if (leadId && typeof leadId === 'string' && leadId.match(/^[0-9a-f-]{36}$/i)) {
                 createdLeadIds.push(leadId);
+                // IMMEDIATE CLEANUP - Works in CI/headless mode
+                cleanupLead(leadId);
               }
             }
           } else {
@@ -475,6 +525,8 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
               const leadId = response.body.id;
               if (leadId && typeof leadId === 'string' && leadId.match(/^[0-9a-f-]{36}$/i)) {
                 createdLeadIds.push(leadId);
+                // IMMEDIATE CLEANUP - Works in CI/headless mode
+                cleanupLead(leadId);
               }
             }
           } else {
@@ -532,6 +584,8 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
               const leadId = response.body.id;
               if (leadId && typeof leadId === 'string' && leadId.match(/^[0-9a-f-]{36}$/i)) {
                 createdLeadIds.push(leadId);
+                // IMMEDIATE CLEANUP - Works in CI/headless mode
+                cleanupLead(leadId);
               }
             }
           } else {
@@ -582,5 +636,63 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
       // Start the first request
       makeRequest();
     });
+  });
+
+  // Final cleanup - batch delete all tracked records (safety net)
+  after(() => {
+    cy.log('🧹 Final cleanup phase - batch deleting all tracked records...');
+    cy.log(`📊 Leads to clean: ${createdLeadIds.length}`);
+    cy.log(`📊 Customers to clean: ${createdCustomerIds.length}`);
+
+    if (!accessToken) {
+      cy.log('⚠️ No access token - skipping final cleanup');
+      return;
+    }
+
+    // Batch cleanup leads
+    if (createdLeadIds.length > 0) {
+      const batchSize = 10;
+      for (let i = 0; i < createdLeadIds.length; i += batchSize) {
+        const batch = createdLeadIds.slice(i, i + batchSize);
+        const idsFilter = batch.map(id => `"${id}"`).join(',');
+        cy.request({
+          method: 'DELETE',
+          url: `${SUPABASE_URL}/rest/v1/leads?id=in.(${idsFilter})`,
+          headers: {
+            apikey: SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${accessToken}`,
+            Prefer: 'return=minimal',
+          },
+          failOnStatusCode: false,
+        }).then(response => {
+          if (response.status === 204 || response.status === 200) {
+            cy.log(`✅ Final cleanup: Deleted ${batch.length} leads`);
+          }
+        });
+      }
+    }
+
+    // Batch cleanup customers
+    if (createdCustomerIds.length > 0) {
+      const batchSize = 10;
+      for (let i = 0; i < createdCustomerIds.length; i += batchSize) {
+        const batch = createdCustomerIds.slice(i, i + batchSize);
+        const idsFilter = batch.map(id => `"${id}"`).join(',');
+        cy.request({
+          method: 'DELETE',
+          url: `${SUPABASE_URL}/rest/v1/customers?id=in.(${idsFilter})`,
+          headers: {
+            apikey: SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${accessToken}`,
+            Prefer: 'return=minimal',
+          },
+          failOnStatusCode: false,
+        }).then(response => {
+          if (response.status === 204 || response.status === 200) {
+            cy.log(`✅ Final cleanup: Deleted ${batch.length} customers`);
+          }
+        });
+      }
+    }
   });
 });

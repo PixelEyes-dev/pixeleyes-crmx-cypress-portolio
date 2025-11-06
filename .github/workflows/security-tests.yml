@@ -5,9 +5,7 @@ on:
     branches: [main, develop]
   push:
     branches: [main]
-  # schedule:
-  # # Run comprehensive security tests nightly at 2 AM UTC (DISABLED - Portfolio only)
-  # - cron: '0 2 * * *'
+  # Schedule removed - Portfolio only, no need for nightly runs
 
 jobs:
   security-tests:
