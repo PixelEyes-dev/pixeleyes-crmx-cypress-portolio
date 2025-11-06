@@ -1,11 +1,11 @@
 /// <reference types="cypress" />
 
 describe('Security Tests - Token Expiration', () => {
-  const SUPABASE_URL = Cypress.env('SUPABASE_URL');
-  const SUPABASE_ANON_KEY = Cypress.env('SUPABASE_ANON_KEY');
+  const SUPABASE_URL = Cypress.env('SUPABASE_URL') || Cypress.env('CYPRESS_SUPABASE_URL');
+  const SUPABASE_ANON_KEY = Cypress.env('SUPABASE_ANON_KEY') || Cypress.env('CYPRESS_SUPABASE_ANON_KEY');
   const testCredentials = {
-    email: Cypress.env('USER_EMAIL'),
-    password: Cypress.env('USER_PASSWORD'),
+    email: Cypress.env('USER_EMAIL') || Cypress.env('CYPRESS_USER_EMAIL'),
+    password: Cypress.env('USER_PASSWORD') || Cypress.env('CYPRESS_USER_PASSWORD'),
   };
 
   let validAccessToken;
