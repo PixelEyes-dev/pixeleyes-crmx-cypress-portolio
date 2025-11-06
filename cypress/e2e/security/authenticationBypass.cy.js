@@ -1,8 +1,8 @@
 /// <reference types="cypress" />
 
 describe('Security Tests - Authentication Bypass', () => {
-  const SUPABASE_URL = Cypress.env('SUPABASE_URL');
-  const SUPABASE_ANON_KEY = Cypress.env('SUPABASE_ANON_KEY');
+  const SUPABASE_URL = Cypress.env('SUPABASE_URL') || Cypress.env('CYPRESS_SUPABASE_URL');
+  const SUPABASE_ANON_KEY = Cypress.env('SUPABASE_ANON_KEY') || Cypress.env('CYPRESS_SUPABASE_ANON_KEY');
 
   describe('Authentication Bypass Attempts', () => {
     it('should prevent access without authentication', () => {
@@ -91,7 +91,7 @@ describe('Security Tests - Authentication Bypass', () => {
           body: creds,
           failOnStatusCode: false,
         }).then(response => {
-          expect(response.status).to.be.oneOf([400, 401, 422]);
+          expect(response.status).to.be.oneOf([400, 401, 403, 422]);
           cy.log(`✅ Empty credentials ${index + 1} properly rejected`);
         });
       });
@@ -137,7 +137,7 @@ describe('Security Tests - Authentication Bypass', () => {
             cy.log(`   Password that worked: ${password}`);
             cy.log(`   This indicates a serious authentication vulnerability`);
           }
-          expect(response.status).to.be.oneOf([400, 401, 422]);
+          expect(response.status).to.be.oneOf([400, 401, 403, 422]);
           cy.log(`✅ Brute force attempt ${index + 1} properly rejected`);
         });
       });

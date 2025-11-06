@@ -1,11 +1,11 @@
 /// <reference types="cypress" />
 
 describe('Security Tests - Input Validation & XSS Prevention', () => {
-  const SUPABASE_URL = Cypress.env('SUPABASE_URL');
-  const SUPABASE_ANON_KEY = Cypress.env('SUPABASE_ANON_KEY');
+  const SUPABASE_URL = Cypress.env('SUPABASE_URL') || Cypress.env('CYPRESS_SUPABASE_URL');
+  const SUPABASE_ANON_KEY = Cypress.env('SUPABASE_ANON_KEY') || Cypress.env('CYPRESS_SUPABASE_ANON_KEY');
   const testCredentials = {
-    email: Cypress.env('USER_EMAIL'),
-    password: Cypress.env('USER_PASSWORD'),
+    email: Cypress.env('USER_EMAIL') || Cypress.env('CYPRESS_USER_EMAIL'),
+    password: Cypress.env('USER_PASSWORD') || Cypress.env('CYPRESS_USER_PASSWORD'),
   };
 
   let accessToken;
@@ -71,9 +71,16 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
     });
   });
 
-  // Cleanup all created test data after all tests
+  // Cleanup all created test data after each test
   // SAFE: Only deletes specific IDs that were created during this test run
-  after(() => {
+  afterEach(() => {
+    cy.log('🧹 Starting cleanup phase...');
+    cy.log(`📊 Supabase URL: ${SUPABASE_URL ? '✅ Set' : '❌Missing'}`);
+    cy.log(`📊 Supabase Key: ${SUPABASE_ANON_KEY ? '✅ Set' : '❌ Missing'}`);
+    cy.log(`📊 Access Token: ${accessToken ? '✅ Set' : '❌ Missing'}`);
+    cy.log(`📊 Leads to clean: ${createdLeadIds.length}`);
+    cy.log(`📊 Customers to clean: ${createdCustomerIds.length}`);
+
     if (!accessToken) {
       cy.log('⚠️ No access token - skipping cleanup');
       return;
