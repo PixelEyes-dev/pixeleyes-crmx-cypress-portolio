@@ -142,6 +142,13 @@ module.exports = defineConfig({
           await dbUtils.disconnect();
           return result;
         },
+        async deleteLeadsByIds(ids) {
+          console.log(`🗑️  Deleting leads by IDs:`, ids);
+          await dbUtils.connect();
+          const result = await dbUtils.deleteLeadsByIds(ids);
+          await dbUtils.disconnect();
+          return result;
+        },
         async queryCustomerByEmail(email) {
           console.log(`🔌 Connecting to database to query customer for email: ${email}`);
           await dbUtils.connect();
@@ -156,6 +163,13 @@ module.exports = defineConfig({
           console.log(`🗑️  Deleting customer with email: ${email}`);
           await dbUtils.connect();
           const result = await dbUtils.deleteCustomerByEmail(email);
+          await dbUtils.disconnect();
+          return result;
+        },
+        async deleteCustomersByIds(ids) {
+          console.log(`🗑️  Deleting customers by IDs:`, ids);
+          await dbUtils.connect();
+          const result = await dbUtils.deleteCustomersByIds(ids);
           await dbUtils.disconnect();
           return result;
         },

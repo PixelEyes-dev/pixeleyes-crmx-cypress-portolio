@@ -1,13 +1,12 @@
 name: Security Tests
 
 on:
-  pull_request:
-    branches: [main, develop]
-  push:
-    branches: [main]
-  # schedule:
-  # # Run comprehensive security tests nightly at 2 AM UTC (DISABLED - Portfolio only)
-  # - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Optional: explain why you are running the security tests manually'
+        required: false
+  # Automated triggers disabled for portfolio use; run manually if needed
 
 jobs:
   security-tests:

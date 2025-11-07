@@ -150,7 +150,7 @@ describe('Security Tests - Authentication Bypass', () => {
 
       cy.log(`🔍 Testing for weak passwords that might exist in the system...`);
 
-      weakPasswords.forEach((password, index) => {
+      weakPasswords.forEach(password => {
         cy.request({
           method: 'POST',
           url: `${SUPABASE_URL}/auth/v1/token?grant_type=password`,

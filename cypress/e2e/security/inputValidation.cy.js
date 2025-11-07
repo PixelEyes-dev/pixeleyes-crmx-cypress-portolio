@@ -18,6 +18,48 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
   const createdLeadIds = [];
   const createdCustomerIds = [];
 
+  // Helper function to clean up a single lead immediately (works in CI)
+  const cleanupLead = leadId => {
+    if (!leadId) {
+      cy.log('⚠️ cleanupLead called without leadId');
+      return;
+    }
+
+    cy.log(`🧹 Attempting immediate cleanup for lead ${leadId.substring(0, 8)} via DB task...`);
+    cy.task('deleteLeadsByIds', [leadId])
+      .then(result => {
+        if (result.deleted > 0) {
+          cy.log(`✅ DB cleanup removed lead ${leadId.substring(0, 8)}...`);
+        } else {
+          cy.log(`⚠️ DB cleanup did not find lead ${leadId.substring(0, 8)}...`);
+        }
+      })
+      .catch(error => {
+        cy.log(`❌ cleanupLead task error for ${leadId.substring(0, 8)}...`, error);
+      });
+  };
+
+  // Helper function to clean up a single customer immediately (works in CI)
+  const cleanupCustomer = customerId => {
+    if (!customerId) {
+      cy.log('⚠️ cleanupCustomer called without customerId');
+      return;
+    }
+
+    cy.log(`🧹 Attempting immediate cleanup for customer ${customerId.substring(0, 8)} via DB task...`);
+    cy.task('deleteCustomersByIds', [customerId])
+      .then(result => {
+        if (result.deleted > 0) {
+          cy.log(`✅ DB cleanup removed customer ${customerId.substring(0, 8)}...`);
+        } else {
+          cy.log(`⚠️ DB cleanup did not find customer ${customerId.substring(0, 8)}...`);
+        }
+      })
+      .catch(error => {
+        cy.log(`❌ cleanupCustomer task error for ${customerId.substring(0, 8)}...`, error);
+      });
+  };
+
   before(() => {
     // Get valid token for testing
     cy.request({
@@ -154,6 +196,7 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
 
   describe('XSS Prevention Tests', () => {
     it('should prevent XSS in lead creation', () => {
+      /* eslint-disable security/detect-script-url */
       const xssPayloads = [
         '<script>alert("XSS")</script>',
         '<img src="x" onerror="alert(\'XSS\')">',
@@ -166,6 +209,7 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
         '<img src="x" onerror="alert(document.cookie)">',
         '<script>fetch("/api/admin/users").then(r=>r.text()).then(d=>alert(d))</script>',
       ];
+      /* eslint-enable security/detect-script-url */
 
       xssPayloads.forEach((payload, index) => {
         cy.log(`🔒 Testing XSS payload ${index + 1} in lead creation`);
@@ -200,6 +244,8 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
             if (leadId && typeof leadId === 'string' && leadId.match(/^[0-9a-f-]{36}$/i)) {
               createdLeadIds.push(leadId); // Track for cleanup
               cy.log(`⚠️ Lead created with XSS payload ${index + 1}, checking if sanitized (ID: ${leadId.substring(0, 8)}...)`);
+              // IMMEDIATE CLEANUP - Works in CI/headless mode
+              cleanupLead(leadId);
             } else {
               cy.log(`⚠️ Invalid ID format returned: ${leadId}`);
             }
@@ -211,7 +257,9 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
     });
 
     it('should prevent XSS in customer creation', () => {
+      /* eslint-disable security/detect-script-url */
       const xssPayloads = ['<script>alert("XSS")</script>', '<img src="x" onerror="alert(\'XSS\')">', 'javascript:alert("XSS")'];
+      /* eslint-enable security/detect-script-url */
 
       xssPayloads.forEach((payload, index) => {
         cy.log(`🔒 Testing XSS payload ${index + 1} in customer creation`);
@@ -244,6 +292,8 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
             if (customerId && typeof customerId === 'string' && customerId.match(/^[0-9a-f-]{36}$/i)) {
               createdCustomerIds.push(customerId); // Track for cleanup
               cy.log(`⚠️ Customer created with XSS payload ${index + 1}, checking if sanitized (ID: ${customerId.substring(0, 8)}...)`);
+              // IMMEDIATE CLEANUP - Works in CI/headless mode
+              cleanupCustomer(customerId);
             } else {
               cy.log(`⚠️ Invalid ID format returned: ${customerId}`);
             }
@@ -380,6 +430,8 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
               const leadId = response.body.id;
               if (leadId && typeof leadId === 'string' && leadId.match(/^[0-9a-f-]{36}$/i)) {
                 createdLeadIds.push(leadId);
+                // IMMEDIATE CLEANUP - Works in CI/headless mode
+                cleanupLead(leadId);
               }
             }
           } else {
@@ -428,6 +480,8 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
               const leadId = response.body.id;
               if (leadId && typeof leadId === 'string' && leadId.match(/^[0-9a-f-]{36}$/i)) {
                 createdLeadIds.push(leadId);
+                // IMMEDIATE CLEANUP - Works in CI/headless mode
+                cleanupLead(leadId);
               }
             }
           } else {
@@ -475,6 +529,8 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
               const leadId = response.body.id;
               if (leadId && typeof leadId === 'string' && leadId.match(/^[0-9a-f-]{36}$/i)) {
                 createdLeadIds.push(leadId);
+                // IMMEDIATE CLEANUP - Works in CI/headless mode
+                cleanupLead(leadId);
               }
             }
           } else {
@@ -532,6 +588,8 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
               const leadId = response.body.id;
               if (leadId && typeof leadId === 'string' && leadId.match(/^[0-9a-f-]{36}$/i)) {
                 createdLeadIds.push(leadId);
+                // IMMEDIATE CLEANUP - Works in CI/headless mode
+                cleanupLead(leadId);
               }
             }
           } else {
@@ -582,5 +640,32 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
       // Start the first request
       makeRequest();
     });
+  });
+
+  // Final cleanup - batch delete all tracked records (safety net)
+  after(() => {
+    cy.log('🧹 Final cleanup phase - batch deleting all tracked records via DB task...');
+    cy.log(`📊 Leads to clean: ${createdLeadIds.length}`);
+    cy.log(`📊 Customers to clean: ${createdCustomerIds.length}`);
+
+    if (createdLeadIds.length > 0) {
+      cy.task('deleteLeadsByIds', createdLeadIds)
+        .then(result => {
+          cy.log(`✅ Final DB cleanup removed ${result.deleted} leads`);
+        })
+        .catch(error => {
+          cy.log('❌ Final DB cleanup error for leads', error);
+        });
+    }
+
+    if (createdCustomerIds.length > 0) {
+      cy.task('deleteCustomersByIds', createdCustomerIds)
+        .then(result => {
+          cy.log(`✅ Final DB cleanup removed ${result.deleted} customers`);
+        })
+        .catch(error => {
+          cy.log('❌ Final DB cleanup error for customers', error);
+        });
+    }
   });
 });
