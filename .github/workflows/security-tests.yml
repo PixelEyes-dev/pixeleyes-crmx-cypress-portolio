@@ -1,11 +1,12 @@
 name: Security Tests
 
 on:
-  pull_request:
-    branches: [main, develop]
-  push:
-    branches: [main]
-  # Schedule removed - Portfolio only, no need for nightly runs
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Optional: explain why you are running the security tests manually'
+        required: false
+  # Automated triggers disabled for portfolio use; run manually if needed
 
 jobs:
   security-tests:
