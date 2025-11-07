@@ -230,6 +230,18 @@ class DatabaseUtils {
     }
   }
 
+  async deleteLeadsByIds(ids = []) {
+    if (!Array.isArray(ids) || ids.length === 0) {
+      console.log('⚠️ deleteLeadsByIds called with empty ids array');
+      return { deleted: 0, leads: [] };
+    }
+
+    const query = 'DELETE FROM leads WHERE id = ANY($1::uuid[]) RETURNING id, first_name, last_name, email';
+    const result = await this.query(query, [ids]);
+    console.log(`🗑️  Deleted ${result.rows.length} leads by IDs`);
+    return { deleted: result.rows.length, leads: result.rows };
+  }
+
   /**
    * Find customer by email
    * @param {string} email - Customer email
@@ -267,6 +279,18 @@ class DatabaseUtils {
       console.log(`❌ No customer found to delete: ${email}`);
       return { deleted: false, customer: null };
     }
+  }
+
+  async deleteCustomersByIds(ids = []) {
+    if (!Array.isArray(ids) || ids.length === 0) {
+      console.log('⚠️ deleteCustomersByIds called with empty ids array');
+      return { deleted: 0, customers: [] };
+    }
+
+    const query = 'DELETE FROM customers WHERE id = ANY($1::uuid[]) RETURNING id, first_name, last_name, email';
+    const result = await this.query(query, [ids]);
+    console.log(`🗑️  Deleted ${result.rows.length} customers by IDs`);
+    return { deleted: result.rows.length, customers: result.rows };
   }
 
   /**

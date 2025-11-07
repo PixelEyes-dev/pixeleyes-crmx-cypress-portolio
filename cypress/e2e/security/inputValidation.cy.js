@@ -25,34 +25,17 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
       return;
     }
 
-    if (!accessToken) {
-      cy.log(`⚠️ cleanupLead skipped - missing access token for lead ${leadId.substring(0, 8)}...`);
-      return;
-    }
-
-    cy.log(`🧹 Attempting immediate cleanup for lead ${leadId.substring(0, 8)}...`);
-    cy.request({
-      method: 'DELETE',
-      url: `${SUPABASE_URL}/rest/v1/leads?id=eq.${leadId}`,
-      headers: {
-        apikey: SUPABASE_ANON_KEY,
-        Authorization: `Bearer ${accessToken}`,
-        Prefer: 'return=minimal',
-      },
-      failOnStatusCode: false,
-    })
-      .then(response => {
-        if (response.status === 204 || response.status === 200) {
-          cy.log(`✅ Cleaned up lead: ${leadId.substring(0, 8)}...`);
+    cy.log(`🧹 Attempting immediate cleanup for lead ${leadId.substring(0, 8)} via DB task...`);
+    cy.task('deleteLeadsByIds', [leadId])
+      .then(result => {
+        if (result.deleted > 0) {
+          cy.log(`✅ DB cleanup removed lead ${leadId.substring(0, 8)}...`);
         } else {
-          cy.log(`⚠️ Failed to cleanup lead ${leadId.substring(0, 8)}...: ${response.status}`);
-          if (response.body) {
-            cy.log(`🔍 Lead cleanup response body:`, response.body);
-          }
+          cy.log(`⚠️ DB cleanup did not find lead ${leadId.substring(0, 8)}...`);
         }
       })
       .catch(error => {
-        cy.log(`❌ cleanupLead error for ${leadId.substring(0, 8)}...`, error);
+        cy.log(`❌ cleanupLead task error for ${leadId.substring(0, 8)}...`, error);
       });
   };
 
@@ -63,34 +46,17 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
       return;
     }
 
-    if (!accessToken) {
-      cy.log(`⚠️ cleanupCustomer skipped - missing access token for customer ${customerId.substring(0, 8)}...`);
-      return;
-    }
-
-    cy.log(`🧹 Attempting immediate cleanup for customer ${customerId.substring(0, 8)}...`);
-    cy.request({
-      method: 'DELETE',
-      url: `${SUPABASE_URL}/rest/v1/customers?id=eq.${customerId}`,
-      headers: {
-        apikey: SUPABASE_ANON_KEY,
-        Authorization: `Bearer ${accessToken}`,
-        Prefer: 'return=minimal',
-      },
-      failOnStatusCode: false,
-    })
-      .then(response => {
-        if (response.status === 204 || response.status === 200) {
-          cy.log(`✅ Cleaned up customer: ${customerId.substring(0, 8)}...`);
+    cy.log(`🧹 Attempting immediate cleanup for customer ${customerId.substring(0, 8)} via DB task...`);
+    cy.task('deleteCustomersByIds', [customerId])
+      .then(result => {
+        if (result.deleted > 0) {
+          cy.log(`✅ DB cleanup removed customer ${customerId.substring(0, 8)}...`);
         } else {
-          cy.log(`⚠️ Failed to cleanup customer ${customerId.substring(0, 8)}...: ${response.status}`);
-          if (response.body) {
-            cy.log(`🔍 Customer cleanup response body:`, response.body);
-          }
+          cy.log(`⚠️ DB cleanup did not find customer ${customerId.substring(0, 8)}...`);
         }
       })
       .catch(error => {
-        cy.log(`❌ cleanupCustomer error for ${customerId.substring(0, 8)}...`, error);
+        cy.log(`❌ cleanupCustomer task error for ${customerId.substring(0, 8)}...`, error);
       });
   };
 
@@ -678,77 +644,28 @@ describe('Security Tests - Input Validation & XSS Prevention', () => {
 
   // Final cleanup - batch delete all tracked records (safety net)
   after(() => {
-    cy.log('🧹 Final cleanup phase - batch deleting all tracked records...');
+    cy.log('🧹 Final cleanup phase - batch deleting all tracked records via DB task...');
     cy.log(`📊 Leads to clean: ${createdLeadIds.length}`);
     cy.log(`📊 Customers to clean: ${createdCustomerIds.length}`);
 
-    if (!accessToken) {
-      cy.log('⚠️ No access token - skipping final cleanup');
-      return;
-    }
-
-    // Batch cleanup leads
     if (createdLeadIds.length > 0) {
-      const batchSize = 10;
-      for (let i = 0; i < createdLeadIds.length; i += batchSize) {
-        const batch = createdLeadIds.slice(i, i + batchSize);
-        const idsFilter = batch.map(id => `"${id}"`).join(',');
-        cy.request({
-          method: 'DELETE',
-          url: `${SUPABASE_URL}/rest/v1/leads?id=in.(${idsFilter})`,
-          headers: {
-            apikey: SUPABASE_ANON_KEY,
-            Authorization: `Bearer ${accessToken}`,
-            Prefer: 'return=minimal',
-          },
-          failOnStatusCode: false,
+      cy.task('deleteLeadsByIds', createdLeadIds)
+        .then(result => {
+          cy.log(`✅ Final DB cleanup removed ${result.deleted} leads`);
         })
-          .then(response => {
-            if (response.status === 204 || response.status === 200) {
-              cy.log(`✅ Final cleanup: Deleted ${batch.length} leads`);
-            } else {
-              cy.log(`⚠️ Final cleanup failed for lead batch (status ${response.status})`);
-              if (response.body) {
-                cy.log(`🔍 Lead batch cleanup response body:`, response.body);
-              }
-            }
-          })
-          .catch(error => {
-            cy.log('❌ Final cleanup error for lead batch', error);
-          });
-      }
+        .catch(error => {
+          cy.log('❌ Final DB cleanup error for leads', error);
+        });
     }
 
-    // Batch cleanup customers
     if (createdCustomerIds.length > 0) {
-      const batchSize = 10;
-      for (let i = 0; i < createdCustomerIds.length; i += batchSize) {
-        const batch = createdCustomerIds.slice(i, i + batchSize);
-        const idsFilter = batch.map(id => `"${id}"`).join(',');
-        cy.request({
-          method: 'DELETE',
-          url: `${SUPABASE_URL}/rest/v1/customers?id=in.(${idsFilter})`,
-          headers: {
-            apikey: SUPABASE_ANON_KEY,
-            Authorization: `Bearer ${accessToken}`,
-            Prefer: 'return=minimal',
-          },
-          failOnStatusCode: false,
+      cy.task('deleteCustomersByIds', createdCustomerIds)
+        .then(result => {
+          cy.log(`✅ Final DB cleanup removed ${result.deleted} customers`);
         })
-          .then(response => {
-            if (response.status === 204 || response.status === 200) {
-              cy.log(`✅ Final cleanup: Deleted ${batch.length} customers`);
-            } else {
-              cy.log(`⚠️ Final cleanup failed for customer batch (status ${response.status})`);
-              if (response.body) {
-                cy.log(`🔍 Customer batch cleanup response body:`, response.body);
-              }
-            }
-          })
-          .catch(error => {
-            cy.log('❌ Final cleanup error for customer batch', error);
-          });
-      }
+        .catch(error => {
+          cy.log('❌ Final DB cleanup error for customers', error);
+        });
     }
   });
 });
